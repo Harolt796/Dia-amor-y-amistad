@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const planetas = document.querySelectorAll('.planeta:not(.peligro)'); // Planetas normales
+    const planetas = document.querySelectorAll('.planeta:not(.peligro)');
     const planetaPeligro = document.getElementById('planeta-peligro');
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modal-img');
@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalMensaje = document.getElementById('modal-mensaje');
     const cerrarBtn = document.querySelector('.cerrar');
     const musica = document.getElementById('musica');
-    
-    // Actores de la cinemática
+    const estadoTexto = document.getElementById('estado-texto');
+
+    // Actores
     const nave = document.getElementById('nave');
     const alien = document.getElementById('alien');
     const explosion = document.getElementById('explosion');
@@ -16,9 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const laserReparador = document.getElementById('laser-reparador');
 
     let musicaIniciada = false;
-    let cinematicaActiva = false;
 
-    // --- LÓGICA DE LOS PLANETAS NORMALES ---
+    // --- LÓGICA DE LOS PLANETAS INTERACTIVOS ---
     function abrirModal(planeta) {
         const imgSrc = planeta.getAttribute('data-img');
         const titulo = planeta.getAttribute('data-titulo');
@@ -36,68 +36,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     planetas.forEach(p => p.addEventListener('click', () => abrirModal(p)));
-
     cerrarBtn.addEventListener('click', () => modal.classList.remove('mostrar'));
     window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('mostrar'); });
 
-    // --- LÓGICA DE LA CINEMÁTICA (EL ATAQUE Y REPARACIÓN) ---
-    planetaPeligro.addEventListener('click', () => {
-        if (cinematicaActiva) return; // Evitar que se ejecute dos veces
-        cinematicaActiva = true;
+    // --- LÓGICA DEL ECOSISTEMA AUTOMÁTICO ---
+    
+    // Función auxiliar para hacer pausas (esperar)
+    const esperar = (ms) => new Promise(res => setTimeout(res, ms));
 
-        if (!musicaIniciada) {
-            musica.play().catch(e => console.log("Audio bloqueado"));
-            musicaIniciada = true;
-        }
-
-        // 1. Llega la nave (3 segundos)
-        nave.style.display = 'block';
-        
-        setTimeout(() => {
-            // 2. La nave dispara el laser
-            laser.style.display = 'block';
-            laser.style.animation = 'disparar 1s forwards';
-        }, 2500);
-
-        setTimeout(() => {
-            // 3. Explota el planeta
-            laser.style.display = 'none';
-            explosion.style.display = 'block';
-            explosion.style.left = '30%'; // Posición del planeta
-            explosion.style.top = '65%';
-            
-            planetaPeligro.classList.add('planeta-herido');
-        }, 3500);
-
-        setTimeout(() => {
-            // 4. Se va la explosión, llega el Alien
-            explosion.style.display = 'none';
-            alien.style.display = 'block';
-        }, 4500);
-
-        setTimeout(() => {
-            // 5. El alien dispara el rayo reparador
-            laserReparador.style.display = 'block';
-            laserReparador.style.animation = 'disparar 1.5s forwards';
-        }, 7000);
-
-        setTimeout(() => {
-            // 6. El planeta se repara
-            laserReparador.style.display = 'none';
+    async function cicloEcosistema() {
+        while (true) { // Bucle infinito
+            // 1. Estado normal
+            estadoTexto.textContent = "Sistema estable...";
+            estadoTexto.style.color = "#00ffff";
+            planetaPeligro.style.background = 'radial-gradient(circle at 30% 30%, #00ff88, #006644)'; // Planeta sano (Verde)
             planetaPeligro.classList.remove('planeta-herido');
-            planetaPeligro.style.background = 'radial-gradient(circle at 30% 30%, #00ff88, #006644)'; // Se vuelve verde
             
-            // Mostrar un mensaje final
-            modalImg.src = 'assets/foto1.jpg'; // Puedes poner una foto especial aquí
-            modalTitulo.textContent = "¡El universo está a salvo!";
-            modalMensaje.textContent = "A veces las cosas se rompen, pero siempre hay alguien dispuesto a ayudar y reparar. Al igual que nuestro cariño. 💚";
-            modal.classList.add('mostrar');
+            await esperar(5000); // Esperar 5 segundos antes de que empiece el caos
 
-        }, 8500);
+            // 2. Llega la nave enemiga
+            estadoTexto.textContent = "¡Alerta! Nave desconocida acercándose...";
+            estadoTexto.style.color = "#ff4444";
+            nave.style.display = 'block';
+            nave.classList.add('visible');
+            
+            await esperar(3000); // La nave tarda 3 seg en llegar
 
-        setTimeout(() => {
-            // 7. El alien se va
+            // 3. La nave dispara
+            estadoTexto.textContent = "¡Disparo detectado!";
+            laser.style.display = 'block';
+            laser.style.width = '150px';
+            
+            await esperar(1000); // El láser tarda 1 seg en impactar
+
+            // 4. Explosión
+            laser.style.display = 'none';
+            laser.style.width = '0';
+            explosion.style.display = 'block';
+            explosion.classList.add('visible');
+            planetaPeligro.classList.add('planeta-herido'); // El planeta se pone gris
+            
+            await esperar(1000); // La explosión dura 1 seg
+
+            // 5. La nave se va
+            explosion.classList.remove('visible');
+            explosion.style.display = 'none';
+            nave.classList.remove('visible');
+            nave.classList.add('saliendo');
+            estadoTexto.textContent = "Planeta dañado. Buscando ayuda...";
+
+            await esperar(2000); // Esperar 2 seg
+
+            // 6. Llega el Alien a reparar
+            nave.style.display = 'none';
+            nave.classList.remove('saliendo');
+            
+            alien.style.display = 'block';
+            alien.classList.add('visible');
+            estadoTexto.textContent = "Entidad amistosa detectada. Reparando...";
+            estadoTexto.style.color = "#00ff88";
+
+            await esperar(3000); // El alien tarda 3 seg en llegar
+
+            // 7. El alien dispara rayo sanador
+            laserReparador.style.display = 'block';
+            laserReparador.style.width = '150px';
+
+            await esperar(1500); // El rayo tarda 1.5 seg
+
+            // 8. El planeta se cura
+            laserReparador.style.display = 'none';
+            laserReparador.style.width = '0';
+            planetaPeligro.classList.remove('planeta-herido'); // El planeta vuelve a la vida
+            estadoTexto.textContent = "¡Planeta restaurado! El ecosistema está a salvo. 💚";
+
+            await esperar(2000);
+
+            // 9. El alien se va
+            alien.classList.remove('visible');
+            alien.classList.add('saliendo');
+            
+            await esperar(2000);
             alien.style.display = 'none';
-        }, 10000);
-    });
+            alien.classList.remove('saliendo');
+
+            // El ciclo vuelve a empezar automáticamente
+        }
+    }
+
+    // Iniciar el ecosistema automático
+    cicloEcosistema();
 });
