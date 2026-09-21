@@ -1,193 +1,75 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
 
 body {
     background: radial-gradient(circle at center, #1b0a2e 0%, #000000 100%);
-    color: white;
-    overflow: hidden;
-    height: 100vh;
-    position: relative;
+    color: white; overflow: hidden; height: 100vh; position: relative;
 }
 
 body::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-image: 
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
-    background-size: 550px 550px, 350px 350px, 250px 250px;
-    background-position: 0 0, 40px 60px, 130px 270px;
-    z-index: -1;
-    animation: brillar 10s infinite alternate;
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
+    background-size: 550px 550px, 350px 350px;
+    background-position: 0 0, 40px 60px;
+    z-index: -1; animation: brillar 10s infinite alternate;
 }
 
-@keyframes brillar {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
-}
+@keyframes brillar { from { opacity: 0.5; } to { opacity: 1; } }
 
-.instruccion {
-    text-align: center;
-    position: absolute;
-    top: 8%;
-    width: 100%;
-    pointer-events: none;
-    text-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
-    z-index: 5;
-}
-
+.instruccion { text-align: center; position: absolute; top: 8%; width: 100%; pointer-events: none; text-shadow: 0 0 10px rgba(255, 105, 180, 0.8); z-index: 5; }
 .instruccion h1 { font-size: 2.5rem; margin-bottom: 10px; }
 
-/* Planetas */
 .planeta {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+    position: absolute; width: 80px; height: 80px; border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ff69b4, #8a2be2);
-    cursor: pointer;
-    box-shadow: 0 0 20px #ff69b4, inset 0 0 15px rgba(255,255,255,0.5);
-    animation: flotar 4s infinite ease-in-out;
-    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer; box-shadow: 0 0 20px #ff69b4;
+    animation: flotar 4s infinite ease-in-out; transition: all 0.5s ease;
     z-index: 2;
 }
 
-.planeta:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 40px #ff1493, inset 0 0 20px white;
-}
-
+.planeta:hover { transform: scale(1.2); box-shadow: 0 0 40px #ff1493, inset 0 0 20px white; }
 .planeta:nth-child(1) { animation-duration: 5s; }
 .planeta:nth-child(2) { animation-duration: 7s; animation-delay: 1s; }
 .planeta:nth-child(3) { animation-duration: 6s; animation-delay: 2s; }
 .planeta:nth-child(4) { animation-duration: 4s; animation-delay: 0.5s; }
 
-@keyframes flotar {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    50% { transform: translateY(-20px) translateX(10px); }
-}
+@keyframes flotar { 0%, 100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-20px) translateX(10px); } }
 
-/* --- ACTORES DE LA CINEMÁTICA --- */
-.actor {
-    position: absolute;
-    font-size: 4rem;
-    display: none; /* Ocultos por defecto */
-    z-index: 10;
-    text-shadow: 0 0 20px rgba(255,255,255,0.8);
-}
+/* --- ACTORES Y ECOSISTEMA --- */
+.actor { position: absolute; font-size: 4rem; display: none; z-index: 10; text-shadow: 0 0 20px rgba(255,255,255,0.8); transition: all 1s ease-in-out; }
 
-/* Animaciones de movimiento */
-@keyframes volar-derecha {
-    0% { left: -100px; top: 20%; transform: rotate(45deg); }
-    100% { left: 40%; top: 60%; transform: rotate(45deg); }
-}
+.nave { left: -100px; top: 20%; }
+.nave.visible { left: 40%; top: 60%; }
+.nave.saliendo { left: 120%; top: 30%; } /* Se va volando */
 
-@keyframes volar-izquierda {
-    0% { right: -100px; top: 10%; transform: rotate(-45deg); }
-    100% { right: 40%; top: 60%; transform: rotate(-45deg); }
-}
+.alien { right: -100px; top: 10%; }
+.alien.visible { right: 40%; top: 60%; }
+.alien.saliendo { right: 120%; top: 30%; }
 
-@keyframes explotar {
-    0% { transform: scale(0); opacity: 1; }
-    50% { transform: scale(2); opacity: 0.8; }
-    100% { transform: scale(3); opacity: 0; }
-}
+.explosion { top: 65%; left: 30%; font-size: 6rem; display: none; }
+.explosion.visible { animation: explotar 1s forwards; }
 
-@keyframes disparar {
-    0% { width: 0; opacity: 1; }
-    100% { width: 150px; opacity: 0; }
-}
+@keyframes explotar { 0% { transform: scale(0); opacity: 1; } 50% { transform: scale(2); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
 
-/* Estilos específicos de los actores */
-.nave { animation: volar-derecha 3s forwards; }
-.alien { animation: volar-izquierda 3s forwards; }
-.explosion { animation: explotar 1s forwards; }
+.laser { background: red; height: 6px; box-shadow: 0 0 15px red; top: 65%; left: 35%; transform: rotate(45deg); transform-origin: left; width: 0; display: none; }
+.laser-reparador { background: #00ffff; height: 6px; box-shadow: 0 0 15px #00ffff; top: 65%; right: 35%; transform: rotate(-45deg); transform-origin: right; width: 0; display: none; }
 
-.laser {
-    background: red;
-    height: 5px;
-    box-shadow: 0 0 15px red;
-    top: 65%; left: 35%;
-    transform: rotate(45deg);
-    transform-origin: left;
-}
-.laser-reparador {
-    background: #00ffff;
-    height: 5px;
-    box-shadow: 0 0 15px #00ffff;
-    top: 65%; right: 35%;
-    transform: rotate(-45deg);
-    transform-origin: right;
-}
+/* Cometa automático */
+.cometa { position: absolute; top: -50px; left: -50px; font-size: 2rem; animation: caer 8s linear infinite; opacity: 0.7; }
+@keyframes caer { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(100vw, 100vh) rotate(360deg); } }
 
 /* Efecto de planeta herido */
-.planeta-herido {
-    filter: grayscale(100%) brightness(50%);
-    box-shadow: 0 0 50px #000 inset !important;
-    animation: none !important;
-    transform: scale(0.8);
-}
+.planeta-herido { filter: grayscale(100%) brightness(30%); box-shadow: 0 0 50px #000 inset !important; transform: scale(0.8); animation: temblar 0.2s infinite; }
+@keyframes temblar { 0% { transform: translate(1px, 1px) scale(0.8); } 50% { transform: translate(-1px, -1px) scale(0.8); } 100% { transform: translate(1px, -1px) scale(0.8); } }
 
-/* Modal (Ventana) */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.modal.mostrar {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-contenido {
-    background: rgba(30, 10, 50, 0.9);
-    border: 2px solid #ff69b4;
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
-    transform: scale(0.8);
-    transition: transform 0.5s ease;
-}
-
+/* Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 100; opacity: 0; transition: opacity 0.5s ease; }
+.modal.mostrar { display: flex; opacity: 1; }
+.modal-contenido { background: rgba(30, 10, 50, 0.9); border: 2px solid #ff69b4; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; text-align: center; position: relative; box-shadow: 0 0 30px rgba(255, 105, 180, 0.5); transform: scale(0.8); transition: transform 0.5s ease; }
 .modal.mostrar .modal-contenido { transform: scale(1); }
-
-.modal-contenido img {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 20px;
-}
-
+.modal-contenido img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; }
 .modal-contenido h2 { color: #ff69b4; margin-bottom: 15px; }
 .modal-contenido p { font-size: 1.1rem; line-height: 1.6; color: #e0e0e0; }
-
-.cerrar {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 30px;
-    color: white;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
+.cerrar { position: absolute; top: 10px; right: 20px; font-size: 30px; color: white; cursor: pointer; transition: color 0.3s; }
 .cerrar:hover { color: #ff69b4; }
