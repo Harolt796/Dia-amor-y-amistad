@@ -10,6 +10,21 @@ body {
     perspective: 1500px; /* Clave para el efecto 3D */
 }
 
+/* --- LOGO DE FONDO (Marca de Agua) --- */
+.logo-fondo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 900px;
+    opacity: 0.08; /* Muy sutil, casi transparente */
+    z-index: 0; /* Detrás de todo */
+    pointer-events: none; /* No bloquea los clics ni el arrastre */
+    filter: grayscale(100%) brightness(0.5); /* Se ve gris y oscuro para integrarse al espacio */
+    object-fit: contain;
+}
+
 /* --- 1. FONDO PROFUNDO (Estrellas y Nebulosas) --- */
 #fondo-profundo {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
@@ -30,7 +45,6 @@ body {
     100% { transform: translate(5vw, -5vh) scale(1.3); }
 }
 
-/* Estrellas titilantes */
 .estrella {
     position: absolute; background: white; border-radius: 50%;
     animation: titilar 3s infinite alternate;
@@ -47,11 +61,12 @@ body {
 #start-screen.oculto { opacity: 0; visibility: hidden; }
 
 .menu-panel {
-    background: rgba(15, 5, 25, 0.8); border: 2px solid #ffcc00;
+    background: rgba(15, 5, 25, 0.85); border: 2px solid #ffcc00;
     border-radius: 20px; padding: 50px; text-align: center;
     max-width: 550px; width: 90%;
     box-shadow: 0 0 60px rgba(255, 204, 0, 0.3), inset 0 0 30px rgba(255, 204, 0, 0.1);
     animation: flotar-menu 5s infinite ease-in-out;
+    position: relative; z-index: 101;
 }
 @keyframes flotar-menu { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
@@ -86,24 +101,21 @@ body {
     transform-style: preserve-3d; transition: transform 0.1s linear;
 }
 
-/* --- PLANETAS 3D REALISTAS --- */
+/* --- PLANETAS 3D --- */
 .planeta-3d {
-    position: absolute; top: -90px; left: -90px; /* Centrar */
+    position: absolute; top: -90px; left: -90px;
     width: 180px; height: 180px; border-radius: 50%;
     cursor: pointer; transition: all 0.3s ease;
     transform-style: preserve-3d;
     box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
 }
-
 .planeta-3d:hover { box-shadow: 0 0 70px white; }
 
-/* Capa de la superficie (Textura y Sombra) */
 .superficie {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     border-radius: 50%;
-    box-shadow: inset -25px -25px 60px rgba(0,0,0,0.9); /* Sombra profunda */
+    box-shadow: inset -25px -25px 60px rgba(0,0,0,0.9);
 }
-/* Brillo especular (El reflejo del sol) */
 .superficie::before {
     content: ''; position: absolute; top: 15%; left: 15%;
     width: 30%; height: 30%; border-radius: 50%;
@@ -111,7 +123,6 @@ body {
     filter: blur(5px);
 }
 
-/* Atmósfera brillante */
 .atmosfera {
     position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
     border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15);
@@ -120,7 +131,6 @@ body {
 }
 @keyframes pulso-atmosfera { 0% { opacity: 0.5; } 100% { opacity: 1; } }
 
-/* Anillos para algunos planetas */
 .anillo {
     position: absolute; top: 50%; left: 50%;
     width: 220%; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3);
@@ -128,7 +138,7 @@ body {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); pointer-events: none;
 }
 
-/* --- 4. ELEMENTOS DE AMBIENTE (FLORES) --- */
+/* --- 4. AMBIENTE (FLORES) --- */
 .flor-flotante {
     position: absolute; font-size: 2rem;
     filter: drop-shadow(0 0 15px #ffcc00);
