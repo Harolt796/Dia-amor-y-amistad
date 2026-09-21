@@ -3,61 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misión: Nuestro Universo ✨</title>
+    <title>Universo de Flores Amarillas 🌻</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Fuente futurista -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Fuente elegante -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Reproductor de música -->
-    <audio id="musica" loop>
-        <source src="assets/musica.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- Pantalla de Inicio -->
-    <div id="start-screen" class="overlay">
-        <div class="hud-panel">
-            <h1>DEFENSA DEL UNIVERSO</h1>
-            <p>Naves enemigas se acercan a nuestros planetas.</p>
-            <p>Haz clic en los <span style="color:red">👾 Aliens</span> para destruirlos.</p>
-            <button id="btn-iniciar">INICIAR DEFENSA</button>
-        </div>
+    <!-- Mensaje Central (Fijo en pantalla) -->
+    <div id="mensaje-central">
+        <h1>Feliz Día del Amor y la Amistad</h1>
+        <div class="flores-decorativas">🌻 ✨ 🌻</div>
+        <p>Te regalo este universo entero, lleno de flores amarillas y estrellas, porque alguien tan especial como tú merece algo infinito.</p>
+        <p class="instruccion">Arrastra para explorar el universo ✨</p>
     </div>
 
-    <!-- Pantalla de Victoria (Mensaje Final) -->
-    <div id="win-screen" class="overlay hidden">
-        <div class="hud-panel win-panel">
-            <h1 style="color: #00ff88;">MISIÓN CUMPLIDA</h1>
-            <img id="win-img" src="assets/foto1.jpg" alt="Recuerdo">
-            <h2 id="win-titulo"></h2>
-            <p id="win-mensaje"></p>
-            <button id="btn-cerrar-win">Cerrar</button>
-        </div>
-    </div>
+    <!-- El Universo Gigante (Se mueve con el arrastre) -->
+    <div id="universo">
+        
+        <!-- Capa de Nebulosas y Ambiente -->
+        <div class="nebulosa nebulosa-1"></div>
+        <div class="nebulosa nebulosa-2"></div>
+        <div class="nebulosa nebulosa-3"></div>
 
-    <!-- HUD (Interfaz de Juego) -->
-    <div id="hud" class="hidden">
-        <div class="hud-item">VIDA DEL PLANETA: <span id="hp-text">100%</span></div>
-        <div class="hud-item">ALIENS DESTRUIDOS: <span id="score-text">0</span></div>
-        <div class="hud-item" id="status-text">SISTEMA ESTABLE</div>
-    </div>
-
-    <!-- Área de Juego -->
-    <div id="game-area">
-        <!-- Planeta Central a defender -->
-        <div id="planeta-central" class="planeta">
-            <div class="vida-bar"><div class="vida-llenado" id="vida-planeta"></div></div>
+        <!-- Planetas con Atmósfera -->
+        <div class="planeta-detallado planeta-1">
+            <div class="anillo"></div>
+            <div class="luna"></div>
         </div>
-        
-        <!-- Capa de Aliens -->
-        <div id="capa-aliens"></div>
-        
-        <!-- Capa de Láseres -->
-        <div id="capa-lasers"></div>
-        
-        <!-- Nave Aliada (Oculta al inicio) -->
-        <div id="nave-aliada" class="actor oculto">🚀</div>
+        <div class="planeta-detallado planeta-2">
+            <div class="atmosfera"></div>
+        </div>
+        <div class="planeta-detallado planeta-3">
+            <div class="anillo"></div>
+        </div>
+
+        <!-- Contenedor para flores, naves y aliens generados por JS -->
+        <div id="capa-flores"></div>
+        <div id="capa-naves"></div>
+        <div id="capa-laseres"></div>
+
     </div>
 
     <script src="script.js"></script>
