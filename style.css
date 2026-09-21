@@ -1,230 +1,160 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    user-select: none;
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Poppins', sans-serif; user-select: none;
 }
 
 body {
-    background: radial-gradient(circle at center, #1b0a2e 0%, #000000 100%);
+    background: #02000a;
     overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    color: white;
-    perspective: 1200px; /* Crea el efecto 3D */
+    height: 100vh; width: 100vw;
+    perspective: 1500px; /* Clave para el efecto 3D */
 }
 
-/* --- 1. PANTALLA DE INICIO --- */
+/* --- 1. FONDO PROFUNDO (Estrellas y Nebulosas) --- */
+#fondo-profundo {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+    background: radial-gradient(circle at 50% 50%, #0a0515 0%, #000000 100%);
+}
+
+.nebulosa {
+    position: absolute; border-radius: 50%; filter: blur(100px);
+    opacity: 0.5; mix-blend-mode: screen;
+    animation: flotar-nebulosa 15s infinite alternate ease-in-out;
+}
+.nebulosa-1 { width: 60vw; height: 60vh; background: #6a00ff; top: 10%; left: 10%; }
+.nebulosa-2 { width: 50vw; height: 50vh; background: #ffcc00; top: 60%; left: 70%; opacity: 0.2; animation-delay: -5s; }
+.nebulosa-3 { width: 40vw; height: 40vh; background: #ff00aa; top: 30%; left: 80%; opacity: 0.3; animation-delay: -10s; }
+
+@keyframes flotar-nebulosa {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(5vw, -5vh) scale(1.3); }
+}
+
+/* Estrellas titilantes */
+.estrella {
+    position: absolute; background: white; border-radius: 50%;
+    animation: titilar 3s infinite alternate;
+}
+@keyframes titilar { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+
+/* --- 2. PANTALLA DE INICIO --- */
 #start-screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px);
     display: flex; justify-content: center; align-items: center;
-    z-index: 100;
-    transition: opacity 0.8s ease, visibility 0.8s;
+    z-index: 100; transition: opacity 1s ease, visibility 1s;
 }
-
-#start-screen.oculto {
-    opacity: 0;
-    visibility: hidden;
-}
+#start-screen.oculto { opacity: 0; visibility: hidden; }
 
 .menu-panel {
-    background: rgba(20, 10, 30, 0.9);
-    border: 2px solid #ffcc00;
-    border-radius: 20px;
-    padding: 40px;
-    text-align: center;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 0 50px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.1);
-    animation: flotar-menu 4s infinite ease-in-out;
+    background: rgba(15, 5, 25, 0.8); border: 2px solid #ffcc00;
+    border-radius: 20px; padding: 50px; text-align: center;
+    max-width: 550px; width: 90%;
+    box-shadow: 0 0 60px rgba(255, 204, 0, 0.3), inset 0 0 30px rgba(255, 204, 0, 0.1);
+    animation: flotar-menu 5s infinite ease-in-out;
 }
-
-@keyframes flotar-menu {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
+@keyframes flotar-menu { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
 .menu-panel h1 {
-    font-family: 'Great Vibes', cursive;
-    font-size: 3rem;
-    color: #ffcc00;
-    margin-bottom: 10px;
-    text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+    font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #ffcc00;
+    margin-bottom: 10px; text-shadow: 0 0 25px rgba(255, 204, 0, 0.9);
 }
+.flores-decorativas { font-size: 2.5rem; margin-bottom: 20px; animation: brillar-flores 2s infinite alternate; }
+@keyframes brillar-flores { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 25px #ffcc00); } }
 
-.flores-decorativas {
-    font-size: 2rem;
-    margin-bottom: 15px;
-    animation: brillar-flores 2s infinite alternate;
-}
-
-.menu-panel p {
-    color: #fff;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 25px;
-}
+.menu-panel p { color: #fff; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; }
 
 #btn-explorar {
-    background: transparent;
-    border: 2px solid #ffcc00;
-    color: #ffcc00;
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    font-family: 'Poppins', sans-serif;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
+    background: transparent; border: 2px solid #ffcc00; color: #ffcc00;
+    padding: 18px 35px; font-size: 1.1rem; font-weight: 600;
+    border-radius: 50px; cursor: pointer; transition: all 0.4s ease;
+    text-transform: uppercase; letter-spacing: 2px;
 }
+#btn-explorar:hover { background: #ffcc00; color: black; box-shadow: 0 0 40px #ffcc00; transform: scale(1.05); }
 
-#btn-explorar:hover {
-    background: #ffcc00;
-    color: black;
-    box-shadow: 0 0 30px #ffcc00;
-    transform: scale(1.05);
-}
-
-@keyframes brillar-flores { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 20px #ffcc00); } }
-
-/* --- 2. FONDO ESPACIAL (Flores y Naves) --- */
-#espacio-fondo {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.flor {
-    position: absolute;
-    font-size: 1.5rem;
-    filter: drop-shadow(0 0 10px #ffcc00);
-    animation: flotar-flor 6s infinite ease-in-out;
-}
-
-@keyframes flotar-flor {
-    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-    50% { transform: translateY(-30px) rotate(15deg); opacity: 1; }
-}
-
-.nave-aleatoria, .alien-aleatorio {
-    position: absolute;
-    font-size: 2rem;
-    filter: drop-shadow(0 0 10px white);
-    z-index: 2;
-}
-
-.laser-random {
-    position: absolute;
-    height: 3px;
-    background: red;
-    box-shadow: 0 0 10px red;
-    transform-origin: left center;
-    z-index: 2;
-}
-
-.explosion-random {
-    position: absolute;
-    font-size: 3rem;
-    pointer-events: none;
-    animation: explotar-random 0.5s forwards;
-    z-index: 3;
-}
-
-@keyframes explotar-random {
-    0% { transform: scale(0); opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
-}
-
-/* --- 3. SISTEMA ORBITAL --- */
-#sistema-orbital {
-    position: absolute;
-    top: 50%; left: 50%;
+/* --- 3. SISTEMA ORBITAL 3D --- */
+#sistema-solar {
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-    z-index: 10;
-    cursor: grab;
+    width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;
+    z-index: 10; cursor: grab;
 }
-#sistema-orbital:active { cursor: grabbing; }
+#sistema-solar:active { cursor: grabbing; }
 
 #orbita {
-    position: relative;
-    width: 0; height: 0;
+    position: relative; width: 0; height: 0;
+    transform-style: preserve-3d; transition: transform 0.1s linear;
+}
+
+/* --- PLANETAS 3D REALISTAS --- */
+.planeta-3d {
+    position: absolute; top: -90px; left: -90px; /* Centrar */
+    width: 180px; height: 180px; border-radius: 50%;
+    cursor: pointer; transition: all 0.3s ease;
     transform-style: preserve-3d;
-    transition: transform 0.1s linear;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
 }
 
-.planeta {
-    position: absolute;
-    top: -75px; left: -75px; /* Centrar el planeta */
-    width: 150px; height: 150px;
+.planeta-3d:hover { box-shadow: 0 0 70px white; }
+
+/* Capa de la superficie (Textura y Sombra) */
+.superficie {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    display: flex; justify-content: center; align-items: center;
+    box-shadow: inset -25px -25px 60px rgba(0,0,0,0.9); /* Sombra profunda */
+}
+/* Brillo especular (El reflejo del sol) */
+.superficie::before {
+    content: ''; position: absolute; top: 15%; left: 15%;
+    width: 30%; height: 30%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+    filter: blur(5px);
 }
 
-.planeta:hover {
-    box-shadow: 0 0 60px white;
-    transform: scale(1.1) !important; /* Sobrescribe el 3D para hacer zoom */
-}
-
+/* Atmósfera brillante */
 .atmosfera {
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8);
-    animation: rotar-planeta 20s infinite linear;
+    position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2), inset 0 0 30px rgba(255, 255, 255, 0.1);
+    animation: pulso-atmosfera 4s infinite alternate;
+}
+@keyframes pulso-atmosfera { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* Anillos para algunos planetas */
+.anillo {
+    position: absolute; top: 50%; left: 50%;
+    width: 220%; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%; transform: translate(-50%, -50%) rotateX(70deg) rotateY(-20deg);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); pointer-events: none;
 }
 
-@keyframes rotar-planeta { 100% { transform: rotate(360deg); } }
+/* --- 4. ELEMENTOS DE AMBIENTE (FLORES) --- */
+.flor-flotante {
+    position: absolute; font-size: 2rem;
+    filter: drop-shadow(0 0 15px #ffcc00);
+    animation: flotar-flor 8s infinite ease-in-out;
+    z-index: 5; pointer-events: none;
+}
+@keyframes flotar-flor {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.7; }
+    50% { transform: translateY(-40px) rotate(20deg) scale(1.2); opacity: 1; }
+}
 
-/* --- 4. VENTANA EMERGENTE (MODAL) --- */
+/* --- 5. MODAL --- */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    justify-content: center; align-items: center;
-    z-index: 200;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+    justify-content: center; align-items: center; z-index: 200; opacity: 0; transition: opacity 0.5s ease;
 }
-
 .modal.mostrar { display: flex; opacity: 1; }
-
 .modal-contenido {
-    background: rgba(30, 10, 50, 0.9);
-    border: 2px solid #ffcc00;
-    border-radius: 20px;
-    padding: 40px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 0 40px rgba(255, 204, 0, 0.5);
-    transform: scale(0.8);
-    transition: transform 0.5s ease;
+    background: rgba(20, 10, 30, 0.95); border: 2px solid #ffcc00;
+    border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;
+    text-align: center; position: relative;
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.5); transform: scale(0.8); transition: transform 0.5s ease;
 }
-
 .modal.mostrar .modal-contenido { transform: scale(1); }
-
-.modal-contenido h2 { color: #ffcc00; margin-bottom: 15px; font-size: 2rem; }
+.modal-contenido h2 { color: #ffcc00; margin-bottom: 15px; font-size: 2rem; text-shadow: 0 0 15px rgba(255,204,0,0.5); }
 .modal-contenido p { font-size: 1.1rem; line-height: 1.6; color: #e0e0e0; }
-
-.cerrar {
-    position: absolute;
-    top: 10px; right: 20px;
-    font-size: 30px; color: white; cursor: pointer;
-    transition: color 0.3s;
-}
-
+.cerrar { position: absolute; top: 10px; right: 20px; font-size: 30px; color: white; cursor: pointer; transition: color 0.3s; }
 .cerrar:hover { color: #ffcc00; }
