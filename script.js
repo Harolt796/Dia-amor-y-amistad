@@ -31,27 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 4, color: '#00ff88', ring: true, msg: "Verde como la Vida. Gracias por traer tanta energía positiva a mi vida." }
     ];
 
-    const radioOrbita = 400; // Distancia desde el centro
+    const radioOrbita = 400;
 
     planetasData.forEach((data, index) => {
         const planeta = document.createElement('div');
         planeta.classList.add('planeta-3d');
         planeta.dataset.id = data.id;
-        planeta.dataset.angulo = (index * 90); // 0, 90, 180, 270 grados
+        planeta.dataset.angulo = (index * 90);
 
-        // Superficie (Textura y Sombra)
         const superficie = document.createElement('div');
         superficie.classList.add('superficie');
         superficie.style.background = `radial-gradient(circle at 30% 30%, ${data.color}, #000000)`;
         planeta.appendChild(superficie);
 
-        // Atmósfera
         const atmosfera = document.createElement('div');
         atmosfera.classList.add('atmosfera');
         atmosfera.style.boxShadow = `0 0 40px ${data.color}`;
         planeta.appendChild(atmosfera);
 
-        // Anillo (Si aplica)
         if (data.ring) {
             const anillo = document.createElement('div');
             anillo.classList.add('anillo');
@@ -59,17 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
             planeta.appendChild(anillo);
         }
 
-        // Posicionamiento 3D inicial
         actualizarPosicionPlaneta(planeta, 0);
-
         orbita.appendChild(planeta);
     });
 
-    // Función para posicionar el planeta en 3D (siempre mirando a la cámara)
     function actualizarPosicionPlaneta(planeta, rotacionActual) {
         const anguloBase = parseFloat(planeta.dataset.angulo);
         const anguloTotal = anguloBase + rotacionActual;
-        // rotateY(ángulo) translateZ(distancia) rotateY(-ángulo) -> Esto hace que el planeta siempre mire al frente
         planeta.style.transform = `rotateY(${anguloTotal}deg) translateZ(${radioOrbita}px) rotateY(${-anguloTotal}deg)`;
     }
 
@@ -78,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startX;
     let currentRotation = 0;
     let startRotation = 0;
-    let autoRotateSpeed = 0.2; // Velocidad de rotación automática
+    let autoRotateSpeed = 0.2;
     let autoRotate = true;
 
     sistemaSolar.addEventListener('mousedown', (e) => {
@@ -99,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         orbita.style.transition = 'transform 0.1s linear';
     });
 
-    // Soporte Táctil
     sistemaSolar.addEventListener('touchstart', (e) => {
         isDragging = true; autoRotate = false;
         startX = e.touches[0].clientX; startRotation = currentRotation;
@@ -118,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         orbita.style.transition = 'transform 0.1s linear';
     });
 
-    // Bucle de animación para rotación automática
     function animar() {
         if (autoRotate) {
             currentRotation += autoRotateSpeed;
@@ -132,13 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.planeta-3d').forEach(p => actualizarPosicionPlaneta(p, currentRotation));
     }
 
-    animar(); // Iniciar el bucle
+    animar();
 
     // --- 4. INTERACCIÓN CON PLANETAS ---
     document.querySelectorAll('.planeta-3d').forEach(planeta => {
         planeta.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Evitar clic si se estaba arrastrando
             if (Math.abs(currentRotation - startRotation) > 5) return;
 
             const id = planeta.dataset.id;
@@ -152,11 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
     cerrarBtn.addEventListener('click', () => modal.classList.remove('mostrar'));
     window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('mostrar'); });
 
-    // --- 5. AMBIENTE ALEATORIO (FLORES AMARILLAS Y COMETAS) ---
+    // --- 5. AMBIENTE ALEATORIO ---
     const emojisFlores = ['🌻', '🌼', '🌟', '✨', '💛'];
 
     function crearAmbiente() {
-        // Flores amarillas flotando
         const flor = document.createElement('div');
         flor.classList.add('flor-flotante');
         flor.textContent = emojisFlores[Math.floor(Math.random() * emojisFlores.length)];
@@ -167,8 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         capaAmbiente.appendChild(flor);
         setTimeout(() => flor.remove(), 12000);
 
-        // Cometas aleatorios
-        if (Math.random() > 0.7) { // 30% de probabilidad
+        if (Math.random() > 0.7) {
             const cometa = document.createElement('div');
             cometa.textContent = '☄️';
             cometa.style.position = 'absolute';
@@ -189,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setInterval(crearAmbiente, 2000);
-    // Crear algunas flores iniciales
     for (let i = 0; i < 10; i++) crearAmbiente();
 
     // --- 6. INICIAR EXPLORACIÓN ---
