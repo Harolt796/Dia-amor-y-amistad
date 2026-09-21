@@ -4,31 +4,34 @@
 }
 
 body {
-    background: #02000a;
+    background: radial-gradient(circle at 50% 50%, #0a0515 0%, #000000 100%);
     overflow: hidden;
     height: 100vh; width: 100vw;
     perspective: 1500px; /* Clave para el efecto 3D */
 }
 
-/* --- LOGO DE FONDO (Marca de Agua) --- */
+/* --- LOGO DE FONDO (Marca de Agua Dorada) --- */
 .logo-fondo {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw;
-    max-width: 900px;
-    opacity: 0.08; /* Muy sutil, casi transparente */
-    z-index: 0; /* Detrás de todo */
-    pointer-events: none; /* No bloquea los clics ni el arrastre */
-    filter: grayscale(100%) brightness(0.5); /* Se ve gris y oscuro para integrarse al espacio */
+    width: 80vw;
+    max-width: 800px;
+    opacity: 0.15; /* Qué tan visible es (0.1 a 0.3) */
+    z-index: 1; /* Detrás de las estrellas, delante del fondo negro */
+    pointer-events: none; /* No bloquea los clics */
+    /* Convierte el logo en un tono dorado brillante */
+    filter: sepia(100%) saturate(500%) hue-rotate(5deg) brightness(1.5);
     object-fit: contain;
+    mix-blend-mode: screen; /* Efecto de luz */
 }
 
 /* --- 1. FONDO PROFUNDO (Estrellas y Nebulosas) --- */
 #fondo-profundo {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-    background: radial-gradient(circle at 50% 50%, #0a0515 0%, #000000 100%);
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    z-index: 2; /* Encima del logo */
+    background: transparent;
 }
 
 .nebulosa {
