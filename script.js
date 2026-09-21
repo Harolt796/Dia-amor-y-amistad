@@ -1,49 +1,108 @@
 document.addEventListener('DOMContentLoaded', () => {
     const startScreen = document.getElementById('start-screen');
     const btnExplorar = document.getElementById('btn-explorar');
-    const sistemaOrbital = document.getElementById('sistema-orbital');
+    const sistemaSolar = document.getElementById('sistema-solar');
     const orbita = document.getElementById('orbita');
-    const espacioFondo = document.getElementById('espacio-fondo');
+    const capaEstrellas = document.getElementById('capa-estrellas');
+    const capaAmbiente = document.getElementById('capa-ambiente');
     const modal = document.getElementById('modal-planeta');
     const modalTitulo = document.getElementById('modal-titulo');
     const modalMensaje = document.getElementById('modal-mensaje');
     const cerrarBtn = document.querySelector('.cerrar');
 
-    // --- 1. INICIAR EXPLORACIÓN ---
-    btnExplorar.addEventListener('click', () => {
-        startScreen.classList.add('oculto');
+    // --- 1. GENERAR ESTRELLAS EN EL FONDO ---
+    for (let i = 0; i < 150; i++) {
+        const estrella = document.createElement('div');
+        estrella.classList.add('estrella');
+        estrella.style.left = `${Math.random() * 100}vw`;
+        estrella.style.top = `${Math.random() * 100}vh`;
+        const size = Math.random() * 3 + 1;
+        estrella.style.width = `${size}px`;
+        estrella.style.height = `${size}px`;
+        estrella.style.animationDelay = `${Math.random() * 3}s`;
+        capaEstrellas.appendChild(estrella);
+    }
+
+    // --- 2. CREAR PLANETAS 3D ---
+    const planetasData = [
+        { id: 1, color: '#ffcc00', ring: false, msg: "Amarillo como el Sol. Gracias por iluminar mis días con tu amistad." },
+        { id: 2, color: '#00ccff', ring: true, msg: "Azul como el Cielo. Nuestra amistad es tan grande e infinita como el universo." },
+        { id: 3, color: '#ff66cc', ring: false, msg: "Rosa como una Flor. Eres una persona única y especial. ¡Sonríe siempre!" },
+        { id: 4, color: '#00ff88', ring: true, msg: "Verde como la Vida. Gracias por traer tanta energía positiva a mi vida." }
+    ];
+
+    const radioOrbita = 400; // Distancia desde el centro
+
+    planetasData.forEach((data, index) => {
+        const planeta = document.createElement('div');
+        planeta.classList.add('planeta-3d');
+        planeta.dataset.id = data.id;
+        planeta.dataset.angulo = (index * 90); // 0, 90, 180, 270 grados
+
+        // Superficie (Textura y Sombra)
+        const superficie = document.createElement('div');
+        superficie.classList.add('superficie');
+        superficie.style.background = `radial-gradient(circle at 30% 30%, ${data.color}, #000000)`;
+        planeta.appendChild(superficie);
+
+        // Atmósfera
+        const atmosfera = document.createElement('div');
+        atmosfera.classList.add('atmosfera');
+        atmosfera.style.boxShadow = `0 0 40px ${data.color}`;
+        planeta.appendChild(atmosfera);
+
+        // Anillo (Si aplica)
+        if (data.ring) {
+            const anillo = document.createElement('div');
+            anillo.classList.add('anillo');
+            anillo.style.borderColor = data.color;
+            planeta.appendChild(anillo);
+        }
+
+        // Posicionamiento 3D inicial
+        actualizarPosicionPlaneta(planeta, 0);
+
+        orbita.appendChild(planeta);
     });
 
-    // --- 2. MOVIMIENTO ORBITAL (CARRUSEL) ---
+    // Función para posicionar el planeta en 3D (siempre mirando a la cámara)
+    function actualizarPosicionPlaneta(planeta, rotacionActual) {
+        const anguloBase = parseFloat(planeta.dataset.angulo);
+        const anguloTotal = anguloBase + rotacionActual;
+        // rotateY(ángulo) translateZ(distancia) rotateY(-ángulo) -> Esto hace que el planeta siempre mire al frente
+        planeta.style.transform = `rotateY(${anguloTotal}deg) translateZ(${radioOrbita}px) rotateY(${-anguloTotal}deg)`;
+    }
+
+    // --- 3. LÓGICA DE ARRASTRE (CARRUSEL) ---
     let isDragging = false;
     let startX;
     let currentRotation = 0;
     let startRotation = 0;
+    let autoRotateSpeed = 0.2; // Velocidad de rotación automática
+    let autoRotate = true;
 
-    sistemaOrbital.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        startX = e.clientX;
-        startRotation = currentRotation;
-        orbita.style.transition = 'none'; // Quitar transición para movimiento fluido
+    sistemaSolar.addEventListener('mousedown', (e) => {
+        isDragging = true; autoRotate = false;
+        startX = e.clientX; startRotation = currentRotation;
+        orbita.style.transition = 'none';
     });
 
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         const deltaX = e.clientX - startX;
-        currentRotation = startRotation + (deltaX * 0.5); // 0.5 es la sensibilidad
-        orbita.style.transform = `rotateY(${currentRotation}deg)`;
+        currentRotation = startRotation + (deltaX * 0.5);
+        actualizarSistema();
     });
 
     window.addEventListener('mouseup', () => {
-        isDragging = false;
-        orbita.style.transition = 'transform 0.1s linear'; // Devolver transición
+        isDragging = false; autoRotate = true;
+        orbita.style.transition = 'transform 0.1s linear';
     });
 
-    // Soporte para pantallas táctiles (Móviles)
-    sistemaOrbital.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        startX = e.touches[0].clientX;
-        startRotation = currentRotation;
+    // Soporte Táctil
+    sistemaSolar.addEventListener('touchstart', (e) => {
+        isDragging = true; autoRotate = false;
+        startX = e.touches[0].clientX; startRotation = currentRotation;
         orbita.style.transition = 'none';
     });
 
@@ -51,31 +110,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isDragging) return;
         const deltaX = e.touches[0].clientX - startX;
         currentRotation = startRotation + (deltaX * 0.5);
-        orbita.style.transform = `rotateY(${currentRotation}deg)`;
+        actualizarSistema();
     });
 
     window.addEventListener('touchend', () => {
-        isDragging = false;
+        isDragging = false; autoRotate = true;
         orbita.style.transition = 'transform 0.1s linear';
     });
 
-    // --- 3. INTERACCIÓN CON LOS PLANETAS (MENSAJES) ---
-    const planetas = document.querySelectorAll('.planeta');
-    const mensajes = {
-        1: { titulo: "Amarillo como el Sol", texto: "Gracias por iluminar mis días con tu amistad. Eres esa persona que siempre está ahí para dar calor y alegría." },
-        2: { titulo: "Azul como el Cielo", texto: "Nuestra amistad es tan grande e infinita como el cielo. Gracias por escucharme y apoyarme siempre." },
-        3: { titulo: "Rosa como una Flor", texto: "Eres una persona única y especial. Me encanta compartir momentos contigo, ¡sonríe siempre!" },
-        4: { titulo: "Verde como la Vida", texto: "Gracias por traer tanta energía positiva a mi vida. ¡Feliz Día de la Amistad y el Amor!" }
-    };
+    // Bucle de animación para rotación automática
+    function animar() {
+        if (autoRotate) {
+            currentRotation += autoRotateSpeed;
+            actualizarSistema();
+        }
+        requestAnimationFrame(animar);
+    }
 
-    planetas.forEach(planeta => {
+    function actualizarSistema() {
+        orbita.style.transform = `rotateY(${currentRotation}deg)`;
+        document.querySelectorAll('.planeta-3d').forEach(p => actualizarPosicionPlaneta(p, currentRotation));
+    }
+
+    animar(); // Iniciar el bucle
+
+    // --- 4. INTERACCIÓN CON PLANETAS ---
+    document.querySelectorAll('.planeta-3d').forEach(planeta => {
         planeta.addEventListener('click', (e) => {
-            // Evitar que el clic se active si se está arrastrando
+            e.stopPropagation();
+            // Evitar clic si se estaba arrastrando
             if (Math.abs(currentRotation - startRotation) > 5) return;
 
-            const id = planeta.getAttribute('data-id');
-            modalTitulo.textContent = mensajes[id].titulo;
-            modalMensaje.textContent = mensajes[id].texto;
+            const id = planeta.dataset.id;
+            const data = planetasData.find(d => d.id == id);
+            modalTitulo.textContent = "Mensaje de Amistad";
+            modalMensaje.textContent = data.msg;
             modal.classList.add('mostrar');
         });
     });
@@ -83,75 +152,48 @@ document.addEventListener('DOMContentLoaded', () => {
     cerrarBtn.addEventListener('click', () => modal.classList.remove('mostrar'));
     window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('mostrar'); });
 
-    // --- 4. AMBIENTE ALEATORIO (FLORES, NAVES, ALIENS) ---
-    const emojisFlores = ['🌻', '🌼', '🌟', '✨'];
+    // --- 5. AMBIENTE ALEATORIO (FLORES AMARILLAS Y COMETAS) ---
+    const emojisFlores = ['🌻', '🌼', '🌟', '✨', '💛'];
 
     function crearAmbiente() {
-        // Crear Flor
+        // Flores amarillas flotando
         const flor = document.createElement('div');
-        flor.classList.add('flor');
+        flor.classList.add('flor-flotante');
         flor.textContent = emojisFlores[Math.floor(Math.random() * emojisFlores.length)];
         flor.style.left = `${Math.random() * 100}vw`;
         flor.style.top = `${Math.random() * 100}vh`;
-        flor.style.animationDuration = `${4 + Math.random() * 4}s`;
-        espacioFondo.appendChild(flor);
-        setTimeout(() => flor.remove(), 8000);
+        flor.style.fontSize = `${1.5 + Math.random() * 2}rem`;
+        flor.style.animationDuration = `${6 + Math.random() * 6}s`;
+        capaAmbiente.appendChild(flor);
+        setTimeout(() => flor.remove(), 12000);
 
-        // Crear Nave o Alien
-        if (Math.random() > 0.3) { // 70% de probabilidad
-            const esNave = Math.random() > 0.5;
-            const entidad = document.createElement('div');
-            entidad.classList.add(esNave ? 'nave-aleatoria' : 'alien-aleatorio');
-            entidad.textContent = esNave ? '🚀' : '👽';
-            entidad.style.left = `${Math.random() * 100}vw`;
-            entidad.style.top = `${Math.random() * 100}vh`;
+        // Cometas aleatorios
+        if (Math.random() > 0.7) { // 30% de probabilidad
+            const cometa = document.createElement('div');
+            cometa.textContent = '☄️';
+            cometa.style.position = 'absolute';
+            cometa.style.fontSize = '2rem';
+            cometa.style.left = '-50px';
+            cometa.style.top = `${Math.random() * 50}vh`;
+            cometa.style.filter = 'drop-shadow(0 0 10px white)';
+            capaAmbiente.appendChild(cometa);
 
-            espacioFondo.appendChild(entidad);
-
-            // Mover en dirección aleatoria
             const duracion = 2 + Math.random() * 3;
-            const dirX = (Math.random() - 0.5) * 50; // vw
-            const dirY = (Math.random() - 0.5) * 50; // vh
-
-            entidad.animate([
-                { transform: `translate(0, 0)` },
-                { transform: `translate(${dirX}vw, ${dirY}vh)` }
+            cometa.animate([
+                { transform: 'translate(0, 0) rotate(45deg)' },
+                { transform: `translate(120vw, 50vh) rotate(45deg)` }
             ], { duration: duracion * 1000, easing: 'linear' });
 
-            // Disparar Láser aleatorio
-            setTimeout(() => {
-                if (Math.random() > 0.5) {
-                    const laser = document.createElement('div');
-                    laser.classList.add('laser-random');
-                    laser.style.left = entidad.style.left;
-                    laser.style.top = entidad.style.top;
-                    laser.style.width = `${50 + Math.random() * 100}px`;
-                    laser.style.transform = `rotate(${Math.random() * 360}deg)`;
-                    if (!esNave) {
-                        laser.style.background = '#00ffff';
-                        laser.style.boxShadow = '0 0 10px #00ffff';
-                    }
-                    espacioFondo.appendChild(laser);
-                    setTimeout(() => laser.remove(), 500);
-                }
-            }, Math.random() * duracion * 1000);
-
-            // Explotar al final
-            setTimeout(() => {
-                if (Math.random() > 0.5) {
-                    const explosion = document.createElement('div');
-                    explosion.classList.add('explosion-random');
-                    explosion.textContent = '💥';
-                    explosion.style.left = entidad.style.left;
-                    explosion.style.top = entidad.style.top;
-                    espacioFondo.appendChild(explosion);
-                    setTimeout(() => explosion.remove(), 500);
-                }
-                entidad.remove();
-            }, duracion * 1000);
+            setTimeout(() => cometa.remove(), duracion * 1000);
         }
     }
 
-    // Crear elementos de ambiente cada 1.5 segundos
-    setInterval(crearAmbiente, 1500);
+    setInterval(crearAmbiente, 2000);
+    // Crear algunas flores iniciales
+    for (let i = 0; i < 10; i++) crearAmbiente();
+
+    // --- 6. INICIAR EXPLORACIÓN ---
+    btnExplorar.addEventListener('click', () => {
+        startScreen.classList.add('oculto');
+    });
 });
