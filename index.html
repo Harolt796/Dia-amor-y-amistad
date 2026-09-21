@@ -9,7 +9,18 @@
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE INICIO (MENÚ) -->
+    <!-- Capa de Fondo Profundo (Nebulosas y Estrellas) -->
+    <div id="fondo-profundo">
+        <div class="nebulosa nebulosa-1"></div>
+        <div class="nebulosa nebulosa-2"></div>
+        <div class="nebulosa nebulosa-3"></div>
+        <div id="capa-estrellas"></div>
+    </div>
+
+    <!-- Capa de Ambiente (Flores, Cometas, etc.) -->
+    <div id="capa-ambiente"></div>
+
+    <!-- Pantalla de Inicio (Menú) -->
     <div id="start-screen">
         <div class="menu-panel">
             <h1>Feliz Día del Amor y la Amistad</h1>
@@ -19,32 +30,14 @@
         </div>
     </div>
 
-    <!-- 2. FONDO ESPACIAL (Flores y Naves aleatorias) -->
-    <div id="espacio-fondo"></div>
-
-    <!-- 3. SISTEMA ORBITAL (Carrusel 3D) -->
-    <div id="sistema-orbital">
+    <!-- Sistema Orbital 3D -->
+    <div id="sistema-solar">
         <div id="orbita">
-            <!-- Planeta 1 -->
-            <div class="planeta" data-id="1" style="transform: rotateY(0deg) translateZ(350px);">
-                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #ffcc00, #cc8800);"></div>
-            </div>
-            <!-- Planeta 2 -->
-            <div class="planeta" data-id="2" style="transform: rotateY(90deg) translateZ(350px);">
-                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #00ccff, #0055cc);"></div>
-            </div>
-            <!-- Planeta 3 -->
-            <div class="planeta" data-id="3" style="transform: rotateY(180deg) translateZ(350px);">
-                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #ff66cc, #990066);"></div>
-            </div>
-            <!-- Planeta 4 -->
-            <div class="planeta" data-id="4" style="transform: rotateY(270deg) translateZ(350px);">
-                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #00ff88, #006644);"></div>
-            </div>
+            <!-- Los planetas se generan con JavaScript para calcular su posición 3D exacta -->
         </div>
     </div>
 
-    <!-- 4. VENTANA EMERGENTE (Mensajes de Amistad) -->
+    <!-- Ventana de Mensajes -->
     <div id="modal-planeta" class="modal">
         <div class="modal-contenido">
             <span class="cerrar">&times;</span>
