@@ -1,129 +1,234 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const planetas = document.querySelectorAll('.planeta:not(.peligro)');
-    const planetaPeligro = document.getElementById('planeta-peligro');
-    const modal = document.getElementById('modal');
-    const modalImg = document.getElementById('modal-img');
-    const modalTitulo = document.getElementById('modal-titulo');
-    const modalMensaje = document.getElementById('modal-mensaje');
-    const cerrarBtn = document.querySelector('.cerrar');
+    const startScreen = document.getElementById('start-screen');
+    const winScreen = document.getElementById('win-screen');
+    const btnIniciar = document.getElementById('btn-iniciar');
+    const btnCerrarWin = document.getElementById('btn-cerrar-win');
+    const hud = document.getElementById('hud');
     const musica = document.getElementById('musica');
-    const estadoTexto = document.getElementById('estado-texto');
-
-    // Actores
-    const nave = document.getElementById('nave');
-    const alien = document.getElementById('alien');
-    const explosion = document.getElementById('explosion');
-    const laser = document.getElementById('laser');
-    const laserReparador = document.getElementById('laser-reparador');
-
-    let musicaIniciada = false;
-
-    // --- LÓGICA DE LOS PLANETAS INTERACTIVOS ---
-    function abrirModal(planeta) {
-        const imgSrc = planeta.getAttribute('data-img');
-        const titulo = planeta.getAttribute('data-titulo');
-        const mensaje = planeta.getAttribute('data-mensaje');
-
-        modalImg.src = imgSrc;
-        modalTitulo.textContent = titulo;
-        modalMensaje.textContent = mensaje;
-        modal.classList.add('mostrar');
-
-        if (!musicaIniciada) {
-            musica.play().catch(e => console.log("Audio bloqueado"));
-            musicaIniciada = true;
-        }
-    }
-
-    planetas.forEach(p => p.addEventListener('click', () => abrirModal(p)));
-    cerrarBtn.addEventListener('click', () => modal.classList.remove('mostrar'));
-    window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('mostrar'); });
-
-    // --- LÓGICA DEL ECOSISTEMA AUTOMÁTICO ---
     
-    // Función auxiliar para hacer pausas (esperar)
-    const esperar = (ms) => new Promise(res => setTimeout(res, ms));
+    const hpText = document.getElementById('hp-text');
+    const scoreText = document.getElementById('score-text');
+    const statusText = document.getElementById('status-text');
+    const vidaPlaneta = document.getElementById('vida-planeta');
+    const planetaCentral = document.getElementById('planeta-central');
+    const capaAliens = document.getElementById('capa-aliens');
+    const capaLasers = document.getElementById('capa-lasers');
+    const naveAliada = document.getElementById('nave-aliada');
 
-    async function cicloEcosistema() {
-        while (true) { // Bucle infinito
-            // 1. Estado normal
-            estadoTexto.textContent = "Sistema estable...";
-            estadoTexto.style.color = "#00ffff";
-            planetaPeligro.style.background = 'radial-gradient(circle at 30% 30%, #00ff88, #006644)'; // Planeta sano (Verde)
-            planetaPeligro.classList.remove('planeta-herido');
-            
-            await esperar(5000); // Esperar 5 segundos antes de que empiece el caos
+    let vida = 100;
+    let score = 0;
+    let juegoActivo = false;
+    let aliens = [];
+    let intervaloAparicion;
+    let intervaloMovimiento;
 
-            // 2. Llega la nave enemiga
-            estadoTexto.textContent = "¡Alerta! Nave desconocida acercándose...";
-            estadoTexto.style.color = "#ff4444";
-            nave.style.display = 'block';
-            nave.classList.add('visible');
-            
-            await esperar(3000); // La nave tarda 3 seg en llegar
+    // Iniciar Juego
+    btnIniciar.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        hud.classList.remove('hidden');
+        musica.play().catch(e => console.log("Audio bloqueado"));
+        iniciarJuego();
+    });
 
-            // 3. La nave dispara
-            estadoTexto.textContent = "¡Disparo detectado!";
-            laser.style.display = 'block';
-            laser.style.width = '150px';
-            
-            await esperar(1000); // El láser tarda 1 seg en impactar
+    btnCerrarWin.addEventListener('click', () => {
+        winScreen.classList.add('hidden');
+        // Opcional: Reiniciar el juego
+        location.reload(); 
+    });
 
-            // 4. Explosión
-            laser.style.display = 'none';
-            laser.style.width = '0';
-            explosion.style.display = 'block';
-            explosion.classList.add('visible');
-            planetaPeligro.classList.add('planeta-herido'); // El planeta se pone gris
-            
-            await esperar(1000); // La explosión dura 1 seg
+    function iniciarJuego() {
+        vida = 100;
+        score = 0;
+        juegoActivo = true;
+        actualizarHUD();
+        
+        // Aparecer aliens cada 1.5 segundos
+        intervaloAparicion = setInterval(crearAlien, 1500);
+        
+        // Mover aliens constantemente (60 fps)
+        intervaloMovimiento = setInterval(moverAliens, 50);
 
-            // 5. La nave se va
-            explosion.classList.remove('visible');
-            explosion.style.display = 'none';
-            nave.classList.remove('visible');
-            nave.classList.add('saliendo');
-            estadoTexto.textContent = "Planeta dañado. Buscando ayuda...";
+        // Después de 15 segundos, viene la nave aliada a salvar el día
+        setTimeout(ataqueNaveAliada, 15000);
+    }
 
-            await esperar(2000); // Esperar 2 seg
+    function actualizarHUD() {
+        hpText.textContent = `${vida}%`;
+        scoreText.textContent = score;
+        vidaPlaneta.style.width = `${vida}%`;
+        if (vida <= 50) vidaPlaneta.style.background = 'orange';
+        if (vida <= 25) vidaPlaneta.style.background = 'red';
+    }
 
-            // 6. Llega el Alien a reparar
-            nave.style.display = 'none';
-            nave.classList.remove('saliendo');
-            
-            alien.style.display = 'block';
-            alien.classList.add('visible');
-            estadoTexto.textContent = "Entidad amistosa detectada. Reparando...";
-            estadoTexto.style.color = "#00ff88";
+    function crearAlien() {
+        if (!juegoActivo) return;
 
-            await esperar(3000); // El alien tarda 3 seg en llegar
+        const alien = document.createElement('div');
+        alien.classList.add('alien');
+        alien.textContent = '👾';
+        
+        // Aparecer en un borde aleatorio
+        const borde = Math.floor(Math.random() * 4);
+        let x, y;
+        const ancho = window.innerWidth;
+        const alto = window.innerHeight;
 
-            // 7. El alien dispara rayo sanador
-            laserReparador.style.display = 'block';
-            laserReparador.style.width = '150px';
+        if (borde === 0) { x = Math.random() * ancho; y = -50; } // Arriba
+        else if (borde === 1) { x = ancho + 50; y = Math.random() * alto; } // Derecha
+        else if (borde === 2) { x = Math.random() * ancho; y = alto + 50; } // Abajo
+        else { x = -50; y = Math.random() * alto; } // Izquierda
 
-            await esperar(1500); // El rayo tarda 1.5 seg
+        alien.style.left = `${x}px`;
+        alien.style.top = `${y}px`;
 
-            // 8. El planeta se cura
-            laserReparador.style.display = 'none';
-            laserReparador.style.width = '0';
-            planetaPeligro.classList.remove('planeta-herido'); // El planeta vuelve a la vida
-            estadoTexto.textContent = "¡Planeta restaurado! El ecosistema está a salvo. 💚";
+        // Datos del alien
+        alien.dataset.x = x;
+        alien.dataset.y = y;
+        alien.dataset.velocidad = 1 + Math.random() * 1.5; // Velocidad aleatoria
 
-            await esperar(2000);
+        // Evento de clic (Destruir alien)
+        alien.addEventListener('click', (e) => {
+            e.stopPropagation();
+            destruirAlien(alien, e.clientX, e.clientY);
+        });
 
-            // 9. El alien se va
-            alien.classList.remove('visible');
-            alien.classList.add('saliendo');
-            
-            await esperar(2000);
-            alien.style.display = 'none';
-            alien.classList.remove('saliendo');
+        capaAliens.appendChild(alien);
+        aliens.push(alien);
+    }
 
-            // El ciclo vuelve a empezar automáticamente
+    function moverAliens() {
+        if (!juegoActivo) return;
+
+        const centroX = window.innerWidth / 2;
+        const centroY = window.innerHeight / 2;
+
+        aliens.forEach(alien => {
+            let x = parseFloat(alien.dataset.x);
+            let y = parseFloat(alien.dataset.y);
+            const velocidad = parseFloat(alien.dataset.velocidad);
+
+            // Mover hacia el centro
+            const dx = centroX - x;
+            const dy = centroY - y;
+            const distancia = Math.sqrt(dx * dx + dy * dy);
+
+            if (distancia < 80) {
+                // El alien llegó al planeta
+                dañarPlaneta(alien);
+                return;
+            }
+
+            x += (dx / distancia) * velocidad;
+            y += (dy / distancia) * velocidad;
+
+            alien.dataset.x = x;
+            alien.dataset.y = y;
+            alien.style.left = `${x}px`;
+            alien.style.top = `${y}px`;
+        });
+    }
+
+    function destruirAlien(alien, clickX, clickY) {
+        score += 10;
+        actualizarHUD();
+        crearExplosion(clickX, clickY);
+        
+        alien.remove();
+        aliens = aliens.filter(a => a !== alien);
+    }
+
+    function dañarPlaneta(alien) {
+        vida -= 10;
+        actualizarHUD();
+        crearExplosion(parseFloat(alien.dataset.x), parseFloat(alien.dataset.y));
+        
+        alien.remove();
+        aliens = aliens.filter(a => a !== alien);
+
+        planetaCentral.classList.add('dañado');
+        setTimeout(() => planetaCentral.classList.remove('dañado'), 500);
+
+        if (vida <= 0) {
+            gameOver();
         }
     }
 
-    // Iniciar el ecosistema automático
-    cicloEcosistema();
+    function crearExplosion(x, y) {
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        explosion.textContent = '💥';
+        explosion.style.left = `${x - 30}px`;
+        explosion.style.top = `${y - 30}px`;
+        document.body.appendChild(explosion);
+        setTimeout(() => explosion.remove(), 500);
+    }
+
+    function gameOver() {
+        juegoActivo = false;
+        clearInterval(intervaloAparicion);
+        clearInterval(intervaloMovimiento);
+        statusText.textContent = "PLANETA DESTRUIDO";
+        statusText.style.color = "red";
+        // Aquí podrías reiniciar o mostrar otra pantalla
+    }
+
+    // --- ATAQUE DE LA NAVE ALIADA ---
+    function ataqueNaveAliada() {
+        if (!juegoActivo) return;
+
+        statusText.textContent = "¡REFUERZOS LLEGANDO!";
+        statusText.style.color = "var(--primary)";
+        
+        // Detener la aparición de aliens
+        clearInterval(intervaloAparicion);
+
+        // Mostrar nave aliada
+        naveAliada.classList.remove('oculto');
+        naveAliada.classList.add('atacando');
+
+        // Después de 1 segundo (cuando la nave está en el centro), dispara
+        setTimeout(() => {
+            // Crear láser gigante
+            const laser = document.createElement('div');
+            laser.classList.add('laser');
+            laser.style.width = '200vw';
+            laser.style.left = '50%';
+            laser.style.top = '50%';
+            laser.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+            laser.style.height = '20px';
+            laser.style.background = 'white';
+            laser.style.boxShadow = '0 0 50px cyan, 0 0 100px cyan';
+            capaLasers.appendChild(laser);
+
+            // Destruir todos los aliens
+            aliens.forEach(alien => {
+                const x = parseFloat(alien.dataset.x);
+                const y = parseFloat(alien.dataset.y);
+                setTimeout(() => {
+                    crearExplosion(x, y);
+                    alien.remove();
+                }, Math.random() * 500);
+            });
+            aliens = [];
+
+            // Limpiar láser
+            setTimeout(() => laser.remove(), 1000);
+
+            // Mostrar mensaje de victoria después de que exploten
+            setTimeout(mostrarVictoria, 2000);
+
+        }, 1500); // La nave tarda 1.5s en llegar al centro
+    }
+
+    function mostrarVictoria() {
+        juegoActivo = false;
+        clearInterval(intervaloMovimiento);
+        
+        // Mostrar pantalla de victoria
+        document.getElementById('win-img').src = 'assets/foto1.jpg';
+        document.getElementById('win-titulo').textContent = "¡Universo Salvado!";
+        document.getElementById('win-mensaje').textContent = "Al igual que defendimos este universo juntos, quiero defender nuestro cariño siempre. ¡Feliz Día de la Amistad y el Amor!";
+        
+        winScreen.classList.remove('hidden');
+    }
 });
