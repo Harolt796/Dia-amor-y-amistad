@@ -3,45 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuestro Universo ✨</title>
+    <title>Misión: Nuestro Universo ✨</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Fuente futurista -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- Reproductor de música -->
     <audio id="musica" loop>
         <source src="assets/musica.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="instruccion">
-        <h1>Nuestro Universo</h1>
-        <p>Explora los planetas mientras el ecosistema cobra vida ✨</p>
-        <p id="estado-texto" style="color: #00ffff; font-weight: bold; margin-top: 10px;">Sistema estable...</p>
-    </div>
-
-    <!-- Actores de la cinemática -->
-    <div id="nave" class="actor nave">🚀</div>
-    <div id="alien" class="actor alien">👽</div>
-    <div id="explosion" class="actor explosion">💥</div>
-    <div id="laser" class="actor laser"></div>
-    <div id="laser-reparador" class="actor laser-reparador"></div>
-    <div class="cometa">☄️</div>
-
-    <div class="universo">
-        <div class="planeta" data-img="assets/foto1.jpg" data-titulo="El día que nos conocimos" data-mensaje="Desde ese momento supe que serías alguien muy especial en mi vida." style="top: 20%; left: 20%;"></div>
-        <div class="planeta" data-img="assets/foto2.jpg" data-titulo="Nuestra primera aventura" data-mensaje="Reír contigo es mi actividad favorita. Gracias por tantos momentos felices." style="top: 60%; left: 70%;"></div>
-        <div class="planeta" data-img="assets/foto3.jpg" data-titulo="Para ti, en este día" data-mensaje="¡Feliz Día de la Amistad y el Amor! Te quiero muchísimo." style="top: 30%; left: 80%;"></div>
-        
-        <!-- Planeta 4 (El que vive la historia) -->
-        <div class="planeta peligro" id="planeta-peligro" style="top: 70%; left: 30%; background: radial-gradient(circle at 30% 30%, #00ff88, #006644);"></div>
-    </div>
-
-    <div id="modal" class="modal">
-        <div class="modal-contenido">
-            <span class="cerrar">&times;</span>
-            <img id="modal-img" src="" alt="Recuerdo">
-            <h2 id="modal-titulo"></h2>
-            <p id="modal-mensaje"></p>
+    <!-- Pantalla de Inicio -->
+    <div id="start-screen" class="overlay">
+        <div class="hud-panel">
+            <h1>DEFENSA DEL UNIVERSO</h1>
+            <p>Naves enemigas se acercan a nuestros planetas.</p>
+            <p>Haz clic en los <span style="color:red">👾 Aliens</span> para destruirlos.</p>
+            <button id="btn-iniciar">INICIAR DEFENSA</button>
         </div>
+    </div>
+
+    <!-- Pantalla de Victoria (Mensaje Final) -->
+    <div id="win-screen" class="overlay hidden">
+        <div class="hud-panel win-panel">
+            <h1 style="color: #00ff88;">MISIÓN CUMPLIDA</h1>
+            <img id="win-img" src="assets/foto1.jpg" alt="Recuerdo">
+            <h2 id="win-titulo"></h2>
+            <p id="win-mensaje"></p>
+            <button id="btn-cerrar-win">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- HUD (Interfaz de Juego) -->
+    <div id="hud" class="hidden">
+        <div class="hud-item">VIDA DEL PLANETA: <span id="hp-text">100%</span></div>
+        <div class="hud-item">ALIENS DESTRUIDOS: <span id="score-text">0</span></div>
+        <div class="hud-item" id="status-text">SISTEMA ESTABLE</div>
+    </div>
+
+    <!-- Área de Juego -->
+    <div id="game-area">
+        <!-- Planeta Central a defender -->
+        <div id="planeta-central" class="planeta">
+            <div class="vida-bar"><div class="vida-llenado" id="vida-planeta"></div></div>
+        </div>
+        
+        <!-- Capa de Aliens -->
+        <div id="capa-aliens"></div>
+        
+        <!-- Capa de Láseres -->
+        <div id="capa-lasers"></div>
+        
+        <!-- Nave Aliada (Oculta al inicio) -->
+        <div id="nave-aliada" class="actor oculto">🚀</div>
     </div>
 
     <script src="script.js"></script>
