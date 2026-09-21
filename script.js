@@ -1,234 +1,181 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const startScreen = document.getElementById('start-screen');
-    const winScreen = document.getElementById('win-screen');
-    const btnIniciar = document.getElementById('btn-iniciar');
-    const btnCerrarWin = document.getElementById('btn-cerrar-win');
-    const hud = document.getElementById('hud');
-    const musica = document.getElementById('musica');
+    const universo = document.getElementById('universo');
+    const capaFlores = document.getElementById('capa-flores');
+    const capaNaves = document.getElementById('capa-naves');
+    const capaLaseres = document.getElementById('capa-laseres');
+
+    // --- 1. LÓGICA DE ARRASTRE (PANEO) ---
+    let isDragging = false;
+    let startX, startY;
+    let currentX = 0, currentY = 0;
+    // Centrar el universo al inicio
+    const centerX = -(window.innerWidth * 1.0); 
+    const centerY = -(window.innerHeight * 1.0);
+    currentX = centerX;
+    currentY = centerY;
+    universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+    document.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - currentX;
+        startY = e.clientY - currentY;
+        universo.style.transition = 'none'; // Quitar transición para que sea fluido
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        currentX = e.clientX - startX;
+        currentY = e.clientY - startY;
+        
+        // Límites para no salirse del universo de 300vw x 300vh
+        const maxX = 0;
+        const minX = -(window.innerWidth * 2);
+        const maxY = 0;
+        const minY = -(window.innerHeight * 2);
+
+        currentX = Math.max(minX, Math.min(maxX, currentX));
+        currentY = Math.max(minY, Math.min(maxY, currentY));
+
+        universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        universo.style.transition = 'transform 0.1s ease-out';
+    });
+
+    // Soporte para pantallas táctiles (Móviles)
+    document.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX - currentX;
+        startY = e.touches[0].clientY - currentY;
+        universo.style.transition = 'none';
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentX = e.touches[0].clientX - startX;
+        currentY = e.touches[0].clientY - startY;
+        universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    });
+
+    document.addEventListener('touchend', () => {
+        isDragging = false;
+        universo.style.transition = 'transform 0.1s ease-out';
+    });
+
+
+    // --- 2. GENERADOR DE FLORES AMARILLAS ---
+    const emojisFlores = ['🌻', '🌼', '🌟', '✨'];
     
-    const hpText = document.getElementById('hp-text');
-    const scoreText = document.getElementById('score-text');
-    const statusText = document.getElementById('status-text');
-    const vidaPlaneta = document.getElementById('vida-planeta');
-    const planetaCentral = document.getElementById('planeta-central');
-    const capaAliens = document.getElementById('capa-aliens');
-    const capaLasers = document.getElementById('capa-lasers');
-    const naveAliada = document.getElementById('nave-aliada');
-
-    let vida = 100;
-    let score = 0;
-    let juegoActivo = false;
-    let aliens = [];
-    let intervaloAparicion;
-    let intervaloMovimiento;
-
-    // Iniciar Juego
-    btnIniciar.addEventListener('click', () => {
-        startScreen.classList.add('hidden');
-        hud.classList.remove('hidden');
-        musica.play().catch(e => console.log("Audio bloqueado"));
-        iniciarJuego();
-    });
-
-    btnCerrarWin.addEventListener('click', () => {
-        winScreen.classList.add('hidden');
-        // Opcional: Reiniciar el juego
-        location.reload(); 
-    });
-
-    function iniciarJuego() {
-        vida = 100;
-        score = 0;
-        juegoActivo = true;
-        actualizarHUD();
+    function crearFlor() {
+        const flor = document.createElement('div');
+        flor.classList.add('flor');
+        flor.textContent = emojisFlores[Math.floor(Math.random() * emojisFlores.length)];
         
-        // Aparecer aliens cada 1.5 segundos
-        intervaloAparicion = setInterval(crearAlien, 1500);
+        // Posición aleatoria en el universo gigante
+        flor.style.left = `${Math.random() * 280}vw`;
+        flor.style.top = `${Math.random() * 280}vh`;
         
-        // Mover aliens constantemente (60 fps)
-        intervaloMovimiento = setInterval(moverAliens, 50);
+        // Duración y delay aleatorio para que no floten al mismo tiempo
+        flor.style.animationDuration = `${4 + Math.random() * 4}s`;
+        flor.style.animationDelay = `${Math.random() * 2}s`;
+        flor.style.fontSize = `${1.5 + Math.random() * 2}rem`;
 
-        // Después de 15 segundos, viene la nave aliada a salvar el día
-        setTimeout(ataqueNaveAliada, 15000);
+        capaFlores.appendChild(flor);
     }
 
-    function actualizarHUD() {
-        hpText.textContent = `${vida}%`;
-        scoreText.textContent = score;
-        vidaPlaneta.style.width = `${vida}%`;
-        if (vida <= 50) vidaPlaneta.style.background = 'orange';
-        if (vida <= 25) vidaPlaneta.style.background = 'red';
-    }
+    // Crear 50 flores iniciales
+    for (let i = 0; i < 50; i++) crearFlor();
+    // Y seguir creando una nueva cada 3 segundos
+    setInterval(crearFlor, 3000);
 
-    function crearAlien() {
-        if (!juegoActivo) return;
 
-        const alien = document.createElement('div');
-        alien.classList.add('alien');
-        alien.textContent = '👾';
+    // --- 3. GUERRA ESPACIAL ALEATORIA (NAVES Y ALIENS) ---
+    function crearEntidad() {
+        const esNave = Math.random() > 0.5;
+        const entidad = document.createElement('div');
+        entidad.classList.add(esNave ? 'nave-aleatoria' : 'alien-aleatorio');
+        entidad.textContent = esNave ? '🚀' : '👽';
         
-        // Aparecer en un borde aleatorio
-        const borde = Math.floor(Math.random() * 4);
-        let x, y;
-        const ancho = window.innerWidth;
-        const alto = window.innerHeight;
+        // Aparecer en un borde aleatorio del universo
+        const x = Math.random() * 280; // vw
+        const y = Math.random() * 280; // vh
+        entidad.style.left = `${x}vw`;
+        entidad.style.top = `${y}vh`;
 
-        if (borde === 0) { x = Math.random() * ancho; y = -50; } // Arriba
-        else if (borde === 1) { x = ancho + 50; y = Math.random() * alto; } // Derecha
-        else if (borde === 2) { x = Math.random() * ancho; y = alto + 50; } // Abajo
-        else { x = -50; y = Math.random() * alto; } // Izquierda
+        // Rotación aleatoria
+        const rotacion = Math.random() * 360;
+        entidad.style.transform = `rotate(${rotacion}deg)`;
 
-        alien.style.left = `${x}px`;
-        alien.style.top = `${y}px`;
+        capaNaves.appendChild(entidad);
 
-        // Datos del alien
-        alien.dataset.x = x;
-        alien.dataset.y = y;
-        alien.dataset.velocidad = 1 + Math.random() * 1.5; // Velocidad aleatoria
+        // Mover la entidad en una dirección aleatoria
+        const duracion = 3 + Math.random() * 5; // 3 a 8 segundos
+        const dirX = (Math.random() - 0.5) * 100; // -50 a 50 vw
+        const dirY = (Math.random() - 0.5) * 100; // -50 a 50 vh
 
-        // Evento de clic (Destruir alien)
-        alien.addEventListener('click', (e) => {
-            e.stopPropagation();
-            destruirAlien(alien, e.clientX, e.clientY);
+        entidad.animate([
+            { transform: `translate(0, 0) rotate(${rotacion}deg)` },
+            { transform: `translate(${dirX}vw, ${dirY}vh) rotate(${rotacion + 180}deg)` }
+        ], {
+            duration: duracion * 1000,
+            easing: 'linear'
         });
 
-        capaAliens.appendChild(alien);
-        aliens.push(alien);
-    }
-
-    function moverAliens() {
-        if (!juegoActivo) return;
-
-        const centroX = window.innerWidth / 2;
-        const centroY = window.innerHeight / 2;
-
-        aliens.forEach(alien => {
-            let x = parseFloat(alien.dataset.x);
-            let y = parseFloat(alien.dataset.y);
-            const velocidad = parseFloat(alien.dataset.velocidad);
-
-            // Mover hacia el centro
-            const dx = centroX - x;
-            const dy = centroY - y;
-            const distancia = Math.sqrt(dx * dx + dy * dy);
-
-            if (distancia < 80) {
-                // El alien llegó al planeta
-                dañarPlaneta(alien);
-                return;
+        // Disparar láser aleatoriamente mientras vuela
+        setTimeout(() => {
+            if (Math.random() > 0.5) {
+                dispararLaser(x, y, esNave);
             }
+        }, Math.random() * duracion * 1000);
 
-            x += (dx / distancia) * velocidad;
-            y += (dy / distancia) * velocidad;
-
-            alien.dataset.x = x;
-            alien.dataset.y = y;
-            alien.style.left = `${x}px`;
-            alien.style.top = `${y}px`;
-        });
+        // Explotar o desaparecer al final
+        setTimeout(() => {
+            if (Math.random() > 0.3) { // 70% de probabilidad de explotar
+                crearExplosion(entidad.style.left, entidad.style.top);
+            }
+            entidad.remove();
+        }, duracion * 1000);
     }
 
-    function destruirAlien(alien, clickX, clickY) {
-        score += 10;
-        actualizarHUD();
-        crearExplosion(clickX, clickY);
+    function dispararLaser(x, y, esNave) {
+        const laser = document.createElement('div');
+        laser.classList.add('laser-random');
+        laser.style.left = `${x}vw`;
+        laser.style.top = `${y}vh`;
         
-        alien.remove();
-        aliens = aliens.filter(a => a !== alien);
-    }
-
-    function dañarPlaneta(alien) {
-        vida -= 10;
-        actualizarHUD();
-        crearExplosion(parseFloat(alien.dataset.x), parseFloat(alien.dataset.y));
-        
-        alien.remove();
-        aliens = aliens.filter(a => a !== alien);
-
-        planetaCentral.classList.add('dañado');
-        setTimeout(() => planetaCentral.classList.remove('dañado'), 500);
-
-        if (vida <= 0) {
-            gameOver();
+        if (!esNave) {
+            laser.style.background = '#00ffff';
+            laser.style.boxShadow = '0 0 10px #00ffff';
         }
+
+        const angulo = Math.random() * 360;
+        const longitud = 100 + Math.random() * 200;
+        
+        laser.style.transform = `rotate(${angulo}deg)`;
+        laser.style.width = `${longitud}px`;
+
+        capaLaseres.appendChild(laser);
+
+        // El láser desaparece después de un momento
+        setTimeout(() => {
+            laser.style.transition = 'opacity 0.2s';
+            laser.style.opacity = '0';
+            setTimeout(() => laser.remove(), 200);
+        }, 300);
     }
 
     function crearExplosion(x, y) {
         const explosion = document.createElement('div');
-        explosion.classList.add('explosion');
+        explosion.classList.add('explosion-random');
         explosion.textContent = '💥';
-        explosion.style.left = `${x - 30}px`;
-        explosion.style.top = `${y - 30}px`;
-        document.body.appendChild(explosion);
+        explosion.style.left = x;
+        explosion.style.top = y;
+        capaNaves.appendChild(explosion);
         setTimeout(() => explosion.remove(), 500);
     }
 
-    function gameOver() {
-        juegoActivo = false;
-        clearInterval(intervaloAparicion);
-        clearInterval(intervaloMovimiento);
-        statusText.textContent = "PLANETA DESTRUIDO";
-        statusText.style.color = "red";
-        // Aquí podrías reiniciar o mostrar otra pantalla
-    }
-
-    // --- ATAQUE DE LA NAVE ALIADA ---
-    function ataqueNaveAliada() {
-        if (!juegoActivo) return;
-
-        statusText.textContent = "¡REFUERZOS LLEGANDO!";
-        statusText.style.color = "var(--primary)";
-        
-        // Detener la aparición de aliens
-        clearInterval(intervaloAparicion);
-
-        // Mostrar nave aliada
-        naveAliada.classList.remove('oculto');
-        naveAliada.classList.add('atacando');
-
-        // Después de 1 segundo (cuando la nave está en el centro), dispara
-        setTimeout(() => {
-            // Crear láser gigante
-            const laser = document.createElement('div');
-            laser.classList.add('laser');
-            laser.style.width = '200vw';
-            laser.style.left = '50%';
-            laser.style.top = '50%';
-            laser.style.transform = 'translate(-50%, -50%) rotate(0deg)';
-            laser.style.height = '20px';
-            laser.style.background = 'white';
-            laser.style.boxShadow = '0 0 50px cyan, 0 0 100px cyan';
-            capaLasers.appendChild(laser);
-
-            // Destruir todos los aliens
-            aliens.forEach(alien => {
-                const x = parseFloat(alien.dataset.x);
-                const y = parseFloat(alien.dataset.y);
-                setTimeout(() => {
-                    crearExplosion(x, y);
-                    alien.remove();
-                }, Math.random() * 500);
-            });
-            aliens = [];
-
-            // Limpiar láser
-            setTimeout(() => laser.remove(), 1000);
-
-            // Mostrar mensaje de victoria después de que exploten
-            setTimeout(mostrarVictoria, 2000);
-
-        }, 1500); // La nave tarda 1.5s en llegar al centro
-    }
-
-    function mostrarVictoria() {
-        juegoActivo = false;
-        clearInterval(intervaloMovimiento);
-        
-        // Mostrar pantalla de victoria
-        document.getElementById('win-img').src = 'assets/foto1.jpg';
-        document.getElementById('win-titulo').textContent = "¡Universo Salvado!";
-        document.getElementById('win-mensaje').textContent = "Al igual que defendimos este universo juntos, quiero defender nuestro cariño siempre. ¡Feliz Día de la Amistad y el Amor!";
-        
-        winScreen.classList.remove('hidden');
-    }
+    // Crear una nueva nave o alien cada 2 segundos
+    setInterval(crearEntidad, 2000);
 });
