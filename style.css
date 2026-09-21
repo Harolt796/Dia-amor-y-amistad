@@ -1,129 +1,203 @@
-:root {
-    --primary: #00ffff;
-    --danger: #ff003c;
-    --success: #00ff88;
-    --bg-dark: #050510;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    user-select: none;
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', sans-serif; user-select: none; }
 
 body {
-    background: radial-gradient(circle at center, #1b0a2e 0%, var(--bg-dark) 100%);
-    color: white; overflow: hidden; height: 100vh; position: relative;
+    background: #030008;
+    overflow: hidden; /* Evita barras de scroll */
+    height: 100vh;
+    width: 100vw;
+    cursor: grab;
 }
 
-/* Efecto de estrellas */
-body::before {
-    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+body:active {
+    cursor: grabbing;
+}
+
+/* --- EL UNIVERSO GIGANTE --- */
+#universo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300vw; /* 3 veces el ancho de la pantalla */
+    height: 300vh; /* 3 veces el alto de la pantalla */
     background-image: 
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
-    background-size: 550px 550px, 350px 350px;
-    background-position: 0 0, 40px 60px;
-    z-index: -1; animation: brillar 10s infinite alternate;
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 1px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    transition: transform 0.1s ease-out; /* Suaviza el arrastre */
+    z-index: 1;
 }
 
-@keyframes brillar { from { opacity: 0.5; } to { opacity: 1; } }
-
-/* Pantallas superpuestas (Inicio / Victoria) */
-.overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-    display: flex; justify-content: center; align-items: center; z-index: 100;
-    transition: opacity 0.5s ease;
+/* --- NEBULOSAS (Ambiente) --- */
+.nebulosa {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    mix-blend-mode: screen;
+    animation: flotar-nebulosa 20s infinite alternate ease-in-out;
 }
-.overlay.hidden { opacity: 0; pointer-events: none; }
+.nebulosa-1 { width: 60vw; height: 60vh; background: #4a00e0; top: 10%; left: 10%; }
+.nebulosa-2 { width: 50vw; height: 70vh; background: #8e2de2; top: 50%; left: 60%; animation-delay: -5s; }
+.nebulosa-3 { width: 40vw; height: 40vh; background: #ffcc00; top: 70%; left: 20%; opacity: 0.2; animation-delay: -10s; }
 
-.hud-panel {
-    background: rgba(10, 10, 30, 0.9); border: 2px solid var(--primary);
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.2);
-    border-radius: 15px; padding: 40px; text-align: center; max-width: 500px; width: 90%;
-    animation: aparecer 0.5s ease-out;
+@keyframes flotar-nebulosa {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(5vw, -5vh) scale(1.2); }
 }
 
-@keyframes aparecer { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-.hud-panel h1 { color: var(--primary); margin-bottom: 15px; font-size: 2rem; text-shadow: 0 0 10px var(--primary); }
-.hud-panel p { margin-bottom: 15px; color: #ccc; font-size: 1.1rem; }
-.hud-panel button {
-    background: transparent; border: 2px solid var(--primary); color: var(--primary);
-    padding: 15px 30px; font-size: 1.2rem; font-family: 'Orbitron', sans-serif; cursor: pointer;
-    border-radius: 5px; transition: all 0.3s ease; text-shadow: 0 0 5px var(--primary);
+/* --- PLANETAS DETALLADOS --- */
+.planeta-detallado {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: inset -20px -20px 40px rgba(0,0,0,0.8);
+    animation: rotar-planeta 30s infinite linear;
 }
-.hud-panel button:hover { background: var(--primary); color: black; box-shadow: 0 0 20px var(--primary); }
 
-/* HUD del juego */
-#hud {
-    position: absolute; top: 20px; left: 20px; right: 20px;
-    display: flex; justify-content: space-between; z-index: 50;
-    background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 255, 0.3);
-    padding: 15px; border-radius: 10px; backdrop-filter: blur(5px);
-    font-size: 0.9rem; letter-spacing: 1px; transition: opacity 0.5s;
+.planeta-1 {
+    width: 150px; height: 150px;
+    background: radial-gradient(circle at 30% 30%, #ffcc00, #cc8800);
+    top: 20%; left: 15%;
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.5), inset -20px -20px 40px rgba(0,0,0,0.8);
 }
-#hud.hidden { opacity: 0; }
-.hud-item { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
 
-/* Planeta Central */
-#game-area { width: 100%; height: 100%; position: relative; }
-#planeta-central {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 150px; height: 150px; border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #00ff88, #006644);
-    box-shadow: 0 0 50px var(--success), inset 0 0 30px rgba(0,0,0,0.8);
-    transition: all 0.5s ease; z-index: 10;
+.planeta-2 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle at 30% 30%, #00ccff, #0055cc);
+    top: 60%; left: 70%;
+    box-shadow: 0 0 60px rgba(0, 204, 255, 0.5), inset -30px -30px 50px rgba(0,0,0,0.8);
 }
-#planeta-central.dañado {
-    background: radial-gradient(circle at 30% 30%, #ff003c, #660016);
-    box-shadow: 0 0 50px var(--danger), inset 0 0 30px rgba(0,0,0,0.8);
-    animation: temblar 0.3s infinite;
-}
-@keyframes temblar { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-48%, -52%) rotate(2deg); } 75% { transform: translate(-52%, -48%) rotate(-2deg); } }
 
-/* Barra de vida */
-.vida-bar { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 150px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; border: 1px solid white; }
-.vida-llenado { height: 100%; width: 100%; background: var(--success); transition: width 0.3s, background 0.3s; }
-
-/* Aliens */
-.alien {
-    position: absolute; font-size: 3rem; cursor: crosshair;
-    filter: drop-shadow(0 0 10px var(--danger));
-    transition: transform 0.1s; z-index: 20;
+.planeta-3 {
+    width: 100px; height: 100px;
+    background: radial-gradient(circle at 30% 30%, #ff66cc, #990066);
+    top: 80%; left: 30%;
+    box-shadow: 0 0 40px rgba(255, 102, 204, 0.5), inset -10px -10px 30px rgba(0,0,0,0.8);
 }
-.alien:active { transform: scale(1.5); }
 
-/* Láseres */
-.laser {
-    position: absolute; height: 4px; background: var(--primary);
-    box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
-    transform-origin: left center; z-index: 15;
+/* Atmósferas y Anillos */
+.atmosfera {
+    position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
 }
-.laser.enemigo { background: var(--danger); box-shadow: 0 0 10px var(--danger), 0 0 20px var(--danger); }
 
-/* Explosiones */
-.explosion {
-    position: absolute; font-size: 4rem; pointer-events: none;
-    animation: explotar 0.5s forwards; z-index: 30;
+.anillo {
+    position: absolute; top: 50%; left: 50%;
+    width: 200%; height: 30px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-20deg);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
-@keyframes explotar {
+
+.luna {
+    position: absolute; top: -30px; right: -30px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #ccc; box-shadow: inset -5px -5px 10px #000;
+    animation: orbitar 10s infinite linear;
+}
+
+@keyframes orbitar { 100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); } }
+@keyframes rotar-planeta { 100% { transform: rotate(360deg); } }
+
+/* --- MENSAJE CENTRAL (UI) --- */
+#mensaje-central {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 5, 20, 0.7);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 204, 0, 0.6);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    z-index: 100;
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.3);
+    pointer-events: none; /* Permite hacer clic a través del mensaje para arrastrar el fondo */
+}
+
+#mensaje-central h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    color: #ffcc00;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+}
+
+.flores-decorativas {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    animation: brillar-flores 2s infinite alternate;
+}
+
+#mensaje-central p {
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.instruccion {
+    font-size: 0.8rem !important;
+    color: #ffcc00 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: parpadear 2s infinite;
+}
+
+@keyframes brillar-flores { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 20px #ffcc00); } }
+@keyframes parpadear { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* --- FLORES, NAVES Y ALIENS (Generados por JS) --- */
+.flor {
+    position: absolute;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px #ffcc00);
+    animation: flotar-flor 6s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@keyframes flotar-flor {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(15deg); }
+}
+
+.nave-aleatoria, .alien-aleatorio {
+    position: absolute;
+    font-size: 3rem;
+    filter: drop-shadow(0 0 10px white);
+    z-index: 10;
+}
+
+.laser-random {
+    position: absolute;
+    height: 3px;
+    background: red;
+    box-shadow: 0 0 10px red;
+    transform-origin: left center;
+    z-index: 9;
+}
+
+.explosion-random {
+    position: absolute;
+    font-size: 4rem;
+    pointer-events: none;
+    animation: explotar-random 0.5s forwards;
+    z-index: 20;
+}
+
+@keyframes explotar-random {
     0% { transform: scale(0); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 1; }
     100% { transform: scale(2); opacity: 0; }
 }
-
-/* Nave Aliada */
-#nave-aliada {
-    position: absolute; font-size: 5rem; z-index: 40;
-    filter: drop-shadow(0 0 20px var(--primary));
-    transition: all 1s ease-in-out;
-}
-#nave-aliada.oculto { display: none; }
-#nave-aliada.atacando { animation: ataque-final 2s forwards; }
-@keyframes ataque-final {
-    0% { left: -100px; top: 50%; transform: translateY(-50%) rotate(45deg); }
-    50% { left: 50%; top: 50%; transform: translateY(-50%) rotate(45deg) scale(1.5); }
-    100% { left: 120%; top: 50%; transform: translateY(-50%) rotate(45deg); }
-}
-
-/* Pantalla de victoria */
-.win-panel img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 10px; margin: 15px 0; border: 2px solid var(--success); }
-.win-panel h2 { color: var(--success); margin-bottom: 10px; }
