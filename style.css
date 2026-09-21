@@ -7,126 +7,48 @@
 }
 
 body {
-    background: #030008;
-    overflow: hidden; /* Evita barras de scroll */
+    background: radial-gradient(circle at center, #1b0a2e 0%, #000000 100%);
+    overflow: hidden;
     height: 100vh;
     width: 100vw;
-    cursor: grab;
+    color: white;
+    perspective: 1200px; /* Crea el efecto 3D */
 }
 
-body:active {
-    cursor: grabbing;
-}
-
-/* --- EL UNIVERSO GIGANTE --- */
-#universo {
+/* --- 1. PANTALLA DE INICIO --- */
+#start-screen {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 300vw; /* 3 veces el ancho de la pantalla */
-    height: 300vh; /* 3 veces el alto de la pantalla */
-    background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-        radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 1px);
-    background-size: 550px 550px, 350px 350px, 250px 250px;
-    background-position: 0 0, 40px 60px, 130px 270px;
-    transition: transform 0.1s ease-out; /* Suaviza el arrastre */
-    z-index: 1;
-}
-
-/* --- NEBULOSAS (Ambiente) --- */
-.nebulosa {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
-    mix-blend-mode: screen;
-    animation: flotar-nebulosa 20s infinite alternate ease-in-out;
-}
-.nebulosa-1 { width: 60vw; height: 60vh; background: #4a00e0; top: 10%; left: 10%; }
-.nebulosa-2 { width: 50vw; height: 70vh; background: #8e2de2; top: 50%; left: 60%; animation-delay: -5s; }
-.nebulosa-3 { width: 40vw; height: 40vh; background: #ffcc00; top: 70%; left: 20%; opacity: 0.2; animation-delay: -10s; }
-
-@keyframes flotar-nebulosa {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(5vw, -5vh) scale(1.2); }
-}
-
-/* --- PLANETAS DETALLADOS --- */
-.planeta-detallado {
-    position: absolute;
-    border-radius: 50%;
-    box-shadow: inset -20px -20px 40px rgba(0,0,0,0.8);
-    animation: rotar-planeta 30s infinite linear;
-}
-
-.planeta-1 {
-    width: 150px; height: 150px;
-    background: radial-gradient(circle at 30% 30%, #ffcc00, #cc8800);
-    top: 20%; left: 15%;
-    box-shadow: 0 0 50px rgba(255, 204, 0, 0.5), inset -20px -20px 40px rgba(0,0,0,0.8);
-}
-
-.planeta-2 {
-    width: 200px; height: 200px;
-    background: radial-gradient(circle at 30% 30%, #00ccff, #0055cc);
-    top: 60%; left: 70%;
-    box-shadow: 0 0 60px rgba(0, 204, 255, 0.5), inset -30px -30px 50px rgba(0,0,0,0.8);
-}
-
-.planeta-3 {
-    width: 100px; height: 100px;
-    background: radial-gradient(circle at 30% 30%, #ff66cc, #990066);
-    top: 80%; left: 30%;
-    box-shadow: 0 0 40px rgba(255, 102, 204, 0.5), inset -10px -10px 30px rgba(0,0,0,0.8);
-}
-
-/* Atmósferas y Anillos */
-.atmosfera {
-    position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
-    border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
-    box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
-}
-
-.anillo {
-    position: absolute; top: 50%; left: 50%;
-    width: 200%; height: 30px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) rotate(-20deg);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-}
-
-.luna {
-    position: absolute; top: -30px; right: -30px;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: #ccc; box-shadow: inset -5px -5px 10px #000;
-    animation: orbitar 10s infinite linear;
-}
-
-@keyframes orbitar { 100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); } }
-@keyframes rotar-planeta { 100% { transform: rotate(360deg); } }
-
-/* --- MENSAJE CENTRAL (UI) --- */
-#mensaje-central {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(10, 5, 20, 0.7);
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 204, 0, 0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100;
+    transition: opacity 0.8s ease, visibility 0.8s;
+}
+
+#start-screen.oculto {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.menu-panel {
+    background: rgba(20, 10, 30, 0.9);
+    border: 2px solid #ffcc00;
     border-radius: 20px;
     padding: 40px;
     text-align: center;
     max-width: 500px;
     width: 90%;
-    z-index: 100;
-    box-shadow: 0 0 50px rgba(255, 204, 0, 0.3);
-    pointer-events: none; /* Permite hacer clic a través del mensaje para arrastrar el fondo */
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.3), inset 0 0 20px rgba(255, 204, 0, 0.1);
+    animation: flotar-menu 4s infinite ease-in-out;
 }
 
-#mensaje-central h1 {
+@keyframes flotar-menu {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.menu-panel h1 {
     font-family: 'Great Vibes', cursive;
     font-size: 3rem;
     color: #ffcc00;
@@ -140,44 +62,62 @@ body:active {
     animation: brillar-flores 2s infinite alternate;
 }
 
-#mensaje-central p {
+.menu-panel p {
     color: #fff;
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-.instruccion {
-    font-size: 0.8rem !important;
-    color: #ffcc00 !important;
+#btn-explorar {
+    background: transparent;
+    border: 2px solid #ffcc00;
+    color: #ffcc00;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 2px;
-    animation: parpadear 2s infinite;
+    font-weight: 600;
+}
+
+#btn-explorar:hover {
+    background: #ffcc00;
+    color: black;
+    box-shadow: 0 0 30px #ffcc00;
+    transform: scale(1.05);
 }
 
 @keyframes brillar-flores { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 20px #ffcc00); } }
-@keyframes parpadear { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* --- FLORES, NAVES Y ALIENS (Generados por JS) --- */
+/* --- 2. FONDO ESPACIAL (Flores y Naves) --- */
+#espacio-fondo {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
 .flor {
     position: absolute;
-    font-size: 2rem;
+    font-size: 1.5rem;
     filter: drop-shadow(0 0 10px #ffcc00);
     animation: flotar-flor 6s infinite ease-in-out;
-    pointer-events: none;
-    z-index: 5;
 }
 
 @keyframes flotar-flor {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(15deg); }
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    50% { transform: translateY(-30px) rotate(15deg); opacity: 1; }
 }
 
 .nave-aleatoria, .alien-aleatorio {
     position: absolute;
-    font-size: 3rem;
+    font-size: 2rem;
     filter: drop-shadow(0 0 10px white);
-    z-index: 10;
+    z-index: 2;
 }
 
 .laser-random {
@@ -186,18 +126,105 @@ body:active {
     background: red;
     box-shadow: 0 0 10px red;
     transform-origin: left center;
-    z-index: 9;
+    z-index: 2;
 }
 
 .explosion-random {
     position: absolute;
-    font-size: 4rem;
+    font-size: 3rem;
     pointer-events: none;
     animation: explotar-random 0.5s forwards;
-    z-index: 20;
+    z-index: 3;
 }
 
 @keyframes explotar-random {
     0% { transform: scale(0); opacity: 1; }
-    100% { transform: scale(2); opacity: 0; }
+    100% { transform: scale(1.5); opacity: 0; }
 }
+
+/* --- 3. SISTEMA ORBITAL --- */
+#sistema-orbital {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10;
+    cursor: grab;
+}
+#sistema-orbital:active { cursor: grabbing; }
+
+#orbita {
+    position: relative;
+    width: 0; height: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear;
+}
+
+.planeta {
+    position: absolute;
+    top: -75px; left: -75px; /* Centrar el planeta */
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.planeta:hover {
+    box-shadow: 0 0 60px white;
+    transform: scale(1.1) !important; /* Sobrescribe el 3D para hacer zoom */
+}
+
+.atmosfera {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8);
+    animation: rotar-planeta 20s infinite linear;
+}
+
+@keyframes rotar-planeta { 100% { transform: rotate(360deg); } }
+
+/* --- 4. VENTANA EMERGENTE (MODAL) --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    justify-content: center; align-items: center;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.modal.mostrar { display: flex; opacity: 1; }
+
+.modal-contenido {
+    background: rgba(30, 10, 50, 0.9);
+    border: 2px solid #ffcc00;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 40px rgba(255, 204, 0, 0.5);
+    transform: scale(0.8);
+    transition: transform 0.5s ease;
+}
+
+.modal.mostrar .modal-contenido { transform: scale(1); }
+
+.modal-contenido h2 { color: #ffcc00; margin-bottom: 15px; font-size: 2rem; }
+.modal-contenido p { font-size: 1.1rem; line-height: 1.6; color: #e0e0e0; }
+
+.cerrar {
+    position: absolute;
+    top: 10px; right: 20px;
+    font-size: 30px; color: white; cursor: pointer;
+    transition: color 0.3s;
+}
+
+.cerrar:hover { color: #ffcc00; }
