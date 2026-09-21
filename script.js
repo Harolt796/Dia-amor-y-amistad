@@ -1,181 +1,157 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const universo = document.getElementById('universo');
-    const capaFlores = document.getElementById('capa-flores');
-    const capaNaves = document.getElementById('capa-naves');
-    const capaLaseres = document.getElementById('capa-laseres');
+    const startScreen = document.getElementById('start-screen');
+    const btnExplorar = document.getElementById('btn-explorar');
+    const sistemaOrbital = document.getElementById('sistema-orbital');
+    const orbita = document.getElementById('orbita');
+    const espacioFondo = document.getElementById('espacio-fondo');
+    const modal = document.getElementById('modal-planeta');
+    const modalTitulo = document.getElementById('modal-titulo');
+    const modalMensaje = document.getElementById('modal-mensaje');
+    const cerrarBtn = document.querySelector('.cerrar');
 
-    // --- 1. LÓGICA DE ARRASTRE (PANEO) ---
+    // --- 1. INICIAR EXPLORACIÓN ---
+    btnExplorar.addEventListener('click', () => {
+        startScreen.classList.add('oculto');
+    });
+
+    // --- 2. MOVIMIENTO ORBITAL (CARRUSEL) ---
     let isDragging = false;
-    let startX, startY;
-    let currentX = 0, currentY = 0;
-    // Centrar el universo al inicio
-    const centerX = -(window.innerWidth * 1.0); 
-    const centerY = -(window.innerHeight * 1.0);
-    currentX = centerX;
-    currentY = centerY;
-    universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    let startX;
+    let currentRotation = 0;
+    let startRotation = 0;
 
-    document.addEventListener('mousedown', (e) => {
+    sistemaOrbital.addEventListener('mousedown', (e) => {
         isDragging = true;
-        startX = e.clientX - currentX;
-        startY = e.clientY - currentY;
-        universo.style.transition = 'none'; // Quitar transición para que sea fluido
+        startX = e.clientX;
+        startRotation = currentRotation;
+        orbita.style.transition = 'none'; // Quitar transición para movimiento fluido
     });
 
-    document.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        currentX = e.clientX - startX;
-        currentY = e.clientY - startY;
-        
-        // Límites para no salirse del universo de 300vw x 300vh
-        const maxX = 0;
-        const minX = -(window.innerWidth * 2);
-        const maxY = 0;
-        const minY = -(window.innerHeight * 2);
-
-        currentX = Math.max(minX, Math.min(maxX, currentX));
-        currentY = Math.max(minY, Math.min(maxY, currentY));
-
-        universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        const deltaX = e.clientX - startX;
+        currentRotation = startRotation + (deltaX * 0.5); // 0.5 es la sensibilidad
+        orbita.style.transform = `rotateY(${currentRotation}deg)`;
     });
 
-    document.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', () => {
         isDragging = false;
-        universo.style.transition = 'transform 0.1s ease-out';
+        orbita.style.transition = 'transform 0.1s linear'; // Devolver transición
     });
 
     // Soporte para pantallas táctiles (Móviles)
-    document.addEventListener('touchstart', (e) => {
+    sistemaOrbital.addEventListener('touchstart', (e) => {
         isDragging = true;
-        startX = e.touches[0].clientX - currentX;
-        startY = e.touches[0].clientY - currentY;
-        universo.style.transition = 'none';
+        startX = e.touches[0].clientX;
+        startRotation = currentRotation;
+        orbita.style.transition = 'none';
     });
 
-    document.addEventListener('touchmove', (e) => {
+    window.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        currentX = e.touches[0].clientX - startX;
-        currentY = e.touches[0].clientY - startY;
-        universo.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        const deltaX = e.touches[0].clientX - startX;
+        currentRotation = startRotation + (deltaX * 0.5);
+        orbita.style.transform = `rotateY(${currentRotation}deg)`;
     });
 
-    document.addEventListener('touchend', () => {
+    window.addEventListener('touchend', () => {
         isDragging = false;
-        universo.style.transition = 'transform 0.1s ease-out';
+        orbita.style.transition = 'transform 0.1s linear';
     });
 
+    // --- 3. INTERACCIÓN CON LOS PLANETAS (MENSAJES) ---
+    const planetas = document.querySelectorAll('.planeta');
+    const mensajes = {
+        1: { titulo: "Amarillo como el Sol", texto: "Gracias por iluminar mis días con tu amistad. Eres esa persona que siempre está ahí para dar calor y alegría." },
+        2: { titulo: "Azul como el Cielo", texto: "Nuestra amistad es tan grande e infinita como el cielo. Gracias por escucharme y apoyarme siempre." },
+        3: { titulo: "Rosa como una Flor", texto: "Eres una persona única y especial. Me encanta compartir momentos contigo, ¡sonríe siempre!" },
+        4: { titulo: "Verde como la Vida", texto: "Gracias por traer tanta energía positiva a mi vida. ¡Feliz Día de la Amistad y el Amor!" }
+    };
 
-    // --- 2. GENERADOR DE FLORES AMARILLAS ---
+    planetas.forEach(planeta => {
+        planeta.addEventListener('click', (e) => {
+            // Evitar que el clic se active si se está arrastrando
+            if (Math.abs(currentRotation - startRotation) > 5) return;
+
+            const id = planeta.getAttribute('data-id');
+            modalTitulo.textContent = mensajes[id].titulo;
+            modalMensaje.textContent = mensajes[id].texto;
+            modal.classList.add('mostrar');
+        });
+    });
+
+    cerrarBtn.addEventListener('click', () => modal.classList.remove('mostrar'));
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('mostrar'); });
+
+    // --- 4. AMBIENTE ALEATORIO (FLORES, NAVES, ALIENS) ---
     const emojisFlores = ['🌻', '🌼', '🌟', '✨'];
-    
-    function crearFlor() {
+
+    function crearAmbiente() {
+        // Crear Flor
         const flor = document.createElement('div');
         flor.classList.add('flor');
         flor.textContent = emojisFlores[Math.floor(Math.random() * emojisFlores.length)];
-        
-        // Posición aleatoria en el universo gigante
-        flor.style.left = `${Math.random() * 280}vw`;
-        flor.style.top = `${Math.random() * 280}vh`;
-        
-        // Duración y delay aleatorio para que no floten al mismo tiempo
+        flor.style.left = `${Math.random() * 100}vw`;
+        flor.style.top = `${Math.random() * 100}vh`;
         flor.style.animationDuration = `${4 + Math.random() * 4}s`;
-        flor.style.animationDelay = `${Math.random() * 2}s`;
-        flor.style.fontSize = `${1.5 + Math.random() * 2}rem`;
+        espacioFondo.appendChild(flor);
+        setTimeout(() => flor.remove(), 8000);
 
-        capaFlores.appendChild(flor);
-    }
+        // Crear Nave o Alien
+        if (Math.random() > 0.3) { // 70% de probabilidad
+            const esNave = Math.random() > 0.5;
+            const entidad = document.createElement('div');
+            entidad.classList.add(esNave ? 'nave-aleatoria' : 'alien-aleatorio');
+            entidad.textContent = esNave ? '🚀' : '👽';
+            entidad.style.left = `${Math.random() * 100}vw`;
+            entidad.style.top = `${Math.random() * 100}vh`;
 
-    // Crear 50 flores iniciales
-    for (let i = 0; i < 50; i++) crearFlor();
-    // Y seguir creando una nueva cada 3 segundos
-    setInterval(crearFlor, 3000);
+            espacioFondo.appendChild(entidad);
 
+            // Mover en dirección aleatoria
+            const duracion = 2 + Math.random() * 3;
+            const dirX = (Math.random() - 0.5) * 50; // vw
+            const dirY = (Math.random() - 0.5) * 50; // vh
 
-    // --- 3. GUERRA ESPACIAL ALEATORIA (NAVES Y ALIENS) ---
-    function crearEntidad() {
-        const esNave = Math.random() > 0.5;
-        const entidad = document.createElement('div');
-        entidad.classList.add(esNave ? 'nave-aleatoria' : 'alien-aleatorio');
-        entidad.textContent = esNave ? '🚀' : '👽';
-        
-        // Aparecer en un borde aleatorio del universo
-        const x = Math.random() * 280; // vw
-        const y = Math.random() * 280; // vh
-        entidad.style.left = `${x}vw`;
-        entidad.style.top = `${y}vh`;
+            entidad.animate([
+                { transform: `translate(0, 0)` },
+                { transform: `translate(${dirX}vw, ${dirY}vh)` }
+            ], { duration: duracion * 1000, easing: 'linear' });
 
-        // Rotación aleatoria
-        const rotacion = Math.random() * 360;
-        entidad.style.transform = `rotate(${rotacion}deg)`;
+            // Disparar Láser aleatorio
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    const laser = document.createElement('div');
+                    laser.classList.add('laser-random');
+                    laser.style.left = entidad.style.left;
+                    laser.style.top = entidad.style.top;
+                    laser.style.width = `${50 + Math.random() * 100}px`;
+                    laser.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    if (!esNave) {
+                        laser.style.background = '#00ffff';
+                        laser.style.boxShadow = '0 0 10px #00ffff';
+                    }
+                    espacioFondo.appendChild(laser);
+                    setTimeout(() => laser.remove(), 500);
+                }
+            }, Math.random() * duracion * 1000);
 
-        capaNaves.appendChild(entidad);
-
-        // Mover la entidad en una dirección aleatoria
-        const duracion = 3 + Math.random() * 5; // 3 a 8 segundos
-        const dirX = (Math.random() - 0.5) * 100; // -50 a 50 vw
-        const dirY = (Math.random() - 0.5) * 100; // -50 a 50 vh
-
-        entidad.animate([
-            { transform: `translate(0, 0) rotate(${rotacion}deg)` },
-            { transform: `translate(${dirX}vw, ${dirY}vh) rotate(${rotacion + 180}deg)` }
-        ], {
-            duration: duracion * 1000,
-            easing: 'linear'
-        });
-
-        // Disparar láser aleatoriamente mientras vuela
-        setTimeout(() => {
-            if (Math.random() > 0.5) {
-                dispararLaser(x, y, esNave);
-            }
-        }, Math.random() * duracion * 1000);
-
-        // Explotar o desaparecer al final
-        setTimeout(() => {
-            if (Math.random() > 0.3) { // 70% de probabilidad de explotar
-                crearExplosion(entidad.style.left, entidad.style.top);
-            }
-            entidad.remove();
-        }, duracion * 1000);
-    }
-
-    function dispararLaser(x, y, esNave) {
-        const laser = document.createElement('div');
-        laser.classList.add('laser-random');
-        laser.style.left = `${x}vw`;
-        laser.style.top = `${y}vh`;
-        
-        if (!esNave) {
-            laser.style.background = '#00ffff';
-            laser.style.boxShadow = '0 0 10px #00ffff';
+            // Explotar al final
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    const explosion = document.createElement('div');
+                    explosion.classList.add('explosion-random');
+                    explosion.textContent = '💥';
+                    explosion.style.left = entidad.style.left;
+                    explosion.style.top = entidad.style.top;
+                    espacioFondo.appendChild(explosion);
+                    setTimeout(() => explosion.remove(), 500);
+                }
+                entidad.remove();
+            }, duracion * 1000);
         }
-
-        const angulo = Math.random() * 360;
-        const longitud = 100 + Math.random() * 200;
-        
-        laser.style.transform = `rotate(${angulo}deg)`;
-        laser.style.width = `${longitud}px`;
-
-        capaLaseres.appendChild(laser);
-
-        // El láser desaparece después de un momento
-        setTimeout(() => {
-            laser.style.transition = 'opacity 0.2s';
-            laser.style.opacity = '0';
-            setTimeout(() => laser.remove(), 200);
-        }, 300);
     }
 
-    function crearExplosion(x, y) {
-        const explosion = document.createElement('div');
-        explosion.classList.add('explosion-random');
-        explosion.textContent = '💥';
-        explosion.style.left = x;
-        explosion.style.top = y;
-        capaNaves.appendChild(explosion);
-        setTimeout(() => explosion.remove(), 500);
-    }
-
-    // Crear una nueva nave o alien cada 2 segundos
-    setInterval(crearEntidad, 2000);
+    // Crear elementos de ambiente cada 1.5 segundos
+    setInterval(crearAmbiente, 1500);
 });
