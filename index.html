@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <!-- Música de fondo. Asegúrate de que tu canción se llame musica.mp3 en la carpeta assets -->
+    <!-- Música de fondo -->
     <audio id="musica" loop>
         <source src="assets/musica.mp3" type="audio/mpeg">
     </audio>
@@ -17,9 +17,17 @@
     <div class="instruccion">
         <h1>Nuestro Universo</h1>
         <p>Haz clic en los planetas para explorar nuestros recuerdos ✨</p>
+        <p style="color: #ff4444; font-weight: bold; margin-top: 10px;">⚠️ ¡Hay un planeta en peligro! Haz clic en el rojo para ver qué pasa.</p>
     </div>
 
-    <!-- El Universo (donde flotan los planetas) -->
+    <!-- Actores de la cinemática (Ocultos al inicio) -->
+    <div id="nave" class="actor nave">🚀</div>
+    <div id="alien" class="actor alien">👽</div>
+    <div id="explosion" class="actor explosion">💥</div>
+    <div id="laser" class="actor laser"></div>
+    <div id="laser-reparador" class="actor laser-reparador"></div>
+
+    <!-- El Universo -->
     <div class="universo">
         
         <!-- Planeta 1 -->
@@ -46,9 +54,14 @@
              style="top: 30%; left: 80%;">
         </div>
 
+        <!-- Planeta 4 (EL PELIGROSO - Activa la cinemática) -->
+        <div class="planeta peligro" id="planeta-peligro"
+             style="top: 70%; left: 30%; background: radial-gradient(circle at 30% 30%, #ff4444, #8b0000); box-shadow: 0 0 30px #ff0000;">
+        </div>
+
     </div>
 
-    <!-- Ventana Emergente (Modal) - Oculta por defecto -->
+    <!-- Ventana Emergente (Modal) -->
     <div id="modal" class="modal">
         <div class="modal-contenido">
             <span class="cerrar">&times;</span>
