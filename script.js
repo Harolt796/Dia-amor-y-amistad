@@ -9,6 +9,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitulo = document.getElementById('modal-titulo');
     const modalMensaje = document.getElementById('modal-mensaje');
     const cerrarBtn = document.querySelector('.cerrar');
+    const musicaFondo = document.getElementById('musicaFondo');
+
+    // --- CONTROL DE MÚSICA ---
+    let musicaIniciada = false;
+
+    function iniciarMusica() {
+        if (!musicaIniciada) {
+            musicaFondo.volume = 0.5; // Volumen al 50%
+            musicaFondo.play().then(() => {
+                musicaIniciada = true;
+                console.log("¡Música iniciada con éxito!");
+            }).catch(error => {
+                console.log("El navegador bloqueó el audio:", error);
+            });
+        }
+    }
 
     // --- 1. GENERAR ESTRELLAS EN EL FONDO ---
     for (let i = 0; i < 150; i++) {
@@ -182,5 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. INICIAR EXPLORACIÓN ---
     btnExplorar.addEventListener('click', () => {
         startScreen.classList.add('oculto');
+        iniciarMusica(); // Intenta reproducir al hacer clic en el botón
     });
+
+    // Respaldo: Si por alguna razón el botón falla, cualquier clic en la pantalla inicia la música
+    document.body.addEventListener('click', iniciarMusica);
 });
