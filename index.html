@@ -8,60 +8,33 @@
 </head>
 <body>
 
-    <!-- Música de fondo -->
     <audio id="musica" loop>
         <source src="assets/musica.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Título e instrucciones -->
     <div class="instruccion">
         <h1>Nuestro Universo</h1>
-        <p>Haz clic en los planetas para explorar nuestros recuerdos ✨</p>
-        <p style="color: #ff4444; font-weight: bold; margin-top: 10px;">⚠️ ¡Hay un planeta en peligro! Haz clic en el rojo para ver qué pasa.</p>
+        <p>Explora los planetas mientras el ecosistema cobra vida ✨</p>
+        <p id="estado-texto" style="color: #00ffff; font-weight: bold; margin-top: 10px;">Sistema estable...</p>
     </div>
 
-    <!-- Actores de la cinemática (Ocultos al inicio) -->
+    <!-- Actores de la cinemática -->
     <div id="nave" class="actor nave">🚀</div>
     <div id="alien" class="actor alien">👽</div>
     <div id="explosion" class="actor explosion">💥</div>
     <div id="laser" class="actor laser"></div>
     <div id="laser-reparador" class="actor laser-reparador"></div>
+    <div class="cometa">☄️</div>
 
-    <!-- El Universo -->
     <div class="universo">
+        <div class="planeta" data-img="assets/foto1.jpg" data-titulo="El día que nos conocimos" data-mensaje="Desde ese momento supe que serías alguien muy especial en mi vida." style="top: 20%; left: 20%;"></div>
+        <div class="planeta" data-img="assets/foto2.jpg" data-titulo="Nuestra primera aventura" data-mensaje="Reír contigo es mi actividad favorita. Gracias por tantos momentos felices." style="top: 60%; left: 70%;"></div>
+        <div class="planeta" data-img="assets/foto3.jpg" data-titulo="Para ti, en este día" data-mensaje="¡Feliz Día de la Amistad y el Amor! Te quiero muchísimo." style="top: 30%; left: 80%;"></div>
         
-        <!-- Planeta 1 -->
-        <div class="planeta" 
-             data-img="assets/foto1.jpg" 
-             data-titulo="El día que nos conocimos" 
-             data-mensaje="Desde ese momento supe que serías alguien muy especial en mi vida."
-             style="top: 20%; left: 20%;">
-        </div>
-
-        <!-- Planeta 2 -->
-        <div class="planeta" 
-             data-img="assets/foto2.jpg" 
-             data-titulo="Nuestra primera aventura" 
-             data-mensaje="Reír contigo es mi actividad favorita. Gracias por tantos momentos felices."
-             style="top: 60%; left: 70%;">
-        </div>
-
-        <!-- Planeta 3 -->
-        <div class="planeta" 
-             data-img="assets/foto3.jpg" 
-             data-titulo="Para ti, en este día" 
-             data-mensaje="¡Feliz Día de la Amistad y el Amor! Te quiero muchísimo."
-             style="top: 30%; left: 80%;">
-        </div>
-
-        <!-- Planeta 4 (EL PELIGROSO - Activa la cinemática) -->
-        <div class="planeta peligro" id="planeta-peligro"
-             style="top: 70%; left: 30%; background: radial-gradient(circle at 30% 30%, #ff4444, #8b0000); box-shadow: 0 0 30px #ff0000;">
-        </div>
-
+        <!-- Planeta 4 (El que vive la historia) -->
+        <div class="planeta peligro" id="planeta-peligro" style="top: 70%; left: 30%; background: radial-gradient(circle at 30% 30%, #00ff88, #006644);"></div>
     </div>
 
-    <!-- Ventana Emergente (Modal) -->
     <div id="modal" class="modal">
         <div class="modal-contenido">
             <span class="cerrar">&times;</span>
