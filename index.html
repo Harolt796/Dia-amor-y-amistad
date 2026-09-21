@@ -5,44 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universo de Flores Amarillas 🌻</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Fuente elegante -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Mensaje Central (Fijo en pantalla) -->
-    <div id="mensaje-central">
-        <h1>Feliz Día del Amor y la Amistad</h1>
-        <div class="flores-decorativas">🌻 ✨ 🌻</div>
-        <p>Te regalo este universo entero, lleno de flores amarillas y estrellas, porque alguien tan especial como tú merece algo infinito.</p>
-        <p class="instruccion">Arrastra para explorar el universo ✨</p>
+    <!-- 1. PANTALLA DE INICIO (MENÚ) -->
+    <div id="start-screen">
+        <div class="menu-panel">
+            <h1>Feliz Día del Amor y la Amistad</h1>
+            <div class="flores-decorativas">🌻 ✨ 🌻</div>
+            <p>Te regalo este universo entero, lleno de flores amarillas y estrellas, porque alguien tan especial como tú merece algo infinito.</p>
+            <button id="btn-explorar">Haz clic para explorar ✨</button>
+        </div>
     </div>
 
-    <!-- El Universo Gigante (Se mueve con el arrastre) -->
-    <div id="universo">
-        
-        <!-- Capa de Nebulosas y Ambiente -->
-        <div class="nebulosa nebulosa-1"></div>
-        <div class="nebulosa nebulosa-2"></div>
-        <div class="nebulosa nebulosa-3"></div>
+    <!-- 2. FONDO ESPACIAL (Flores y Naves aleatorias) -->
+    <div id="espacio-fondo"></div>
 
-        <!-- Planetas con Atmósfera -->
-        <div class="planeta-detallado planeta-1">
-            <div class="anillo"></div>
-            <div class="luna"></div>
+    <!-- 3. SISTEMA ORBITAL (Carrusel 3D) -->
+    <div id="sistema-orbital">
+        <div id="orbita">
+            <!-- Planeta 1 -->
+            <div class="planeta" data-id="1" style="transform: rotateY(0deg) translateZ(350px);">
+                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #ffcc00, #cc8800);"></div>
+            </div>
+            <!-- Planeta 2 -->
+            <div class="planeta" data-id="2" style="transform: rotateY(90deg) translateZ(350px);">
+                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #00ccff, #0055cc);"></div>
+            </div>
+            <!-- Planeta 3 -->
+            <div class="planeta" data-id="3" style="transform: rotateY(180deg) translateZ(350px);">
+                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #ff66cc, #990066);"></div>
+            </div>
+            <!-- Planeta 4 -->
+            <div class="planeta" data-id="4" style="transform: rotateY(270deg) translateZ(350px);">
+                <div class="atmosfera" style="background: radial-gradient(circle at 30% 30%, #00ff88, #006644);"></div>
+            </div>
         </div>
-        <div class="planeta-detallado planeta-2">
-            <div class="atmosfera"></div>
-        </div>
-        <div class="planeta-detallado planeta-3">
-            <div class="anillo"></div>
-        </div>
+    </div>
 
-        <!-- Contenedor para flores, naves y aliens generados por JS -->
-        <div id="capa-flores"></div>
-        <div id="capa-naves"></div>
-        <div id="capa-laseres"></div>
-
+    <!-- 4. VENTANA EMERGENTE (Mensajes de Amistad) -->
+    <div id="modal-planeta" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar">&times;</span>
+            <h2 id="modal-titulo"></h2>
+            <p id="modal-mensaje"></p>
+        </div>
     </div>
 
     <script src="script.js"></script>
